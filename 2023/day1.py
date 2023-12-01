@@ -37,16 +37,13 @@ def part2():
         for temp in nums_text:
             idxs.append(str.find(temp))
 
-        max_id = -1
-        max_val = 0
+        max_id = np.argmax(idxs)
         min_id = -1
+        min_val = 1000
         for i, id in enumerate(idxs):
-            if id > -1:
-                max_id = i
-        for i, id in enumerate(idxs):
-            if id > -1:
+            if id > -1 and id < min_val:
                 min_id = i
-                break
+                min_val = id
         num += nums_digit_map[min_id]
         if max_id != min_id:
             num += nums_digit_map[max_id]
