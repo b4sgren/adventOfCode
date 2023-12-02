@@ -23,8 +23,8 @@ def part1():
     print(np.sum(vals))
 
 def part2():
-    with open('day1.txt', 'r') as f:
-    # with open('temp.txt', 'r') as f:
+    # with open('day1.txt', 'r') as f:
+    with open('temp.txt', 'r') as f:
         data = f.readlines()
 
     vals = []
@@ -35,11 +35,11 @@ def part2():
     for str in data:
         str_orig = copy(str)
         num = ''
-        idxs = []
         for i, temp in enumerate(nums_text):
-            idxs.append(str.find(temp))
-            if idxs[-1] > -1:
-                str = str[:idxs[-1]] + nums_digit_map[i] + str[idxs[-1]+1:]
+            idx = str.find(temp)
+            while(idx > -1):  # For duplicate numbers
+                str = str[:idx+1] + nums_digit_map[i] + str[idx+2:]
+                idx = str.find(temp)
 
         for char in str:
             if char.isdigit():
