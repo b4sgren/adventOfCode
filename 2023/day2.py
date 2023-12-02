@@ -39,10 +39,34 @@ def part1():
     print(np.sum(game_ids))
 
 def part2():
-    # with open('day2.txt', 'r') as f:
-    with open('temp.txt', 'r') as f:
+    with open('day2.txt', 'r') as f:
+    # with open('temp.txt', 'r') as f:
         data = f.readlines()
 
+    colors = ['red', 'blue', 'green']
+
+    powers = []
+
+    for z, line in enumerate(data):
+        max_cubes_dict = {'red':0, 'green':0, 'blue':0}
+        tokens = line.split()
+        tokens = tokens[2:]
+
+
+        for i in range(0, len(tokens), 2):
+            num_cubes = int(tokens[i])
+            for temp in colors:
+                if tokens[i+1].find(temp) > -1:
+                    color = temp
+                    break
+            if num_cubes > max_cubes_dict[color]:
+                max_cubes_dict[color] = num_cubes
+
+        powers.append(np.product(list(max_cubes_dict.values())))
+
+
+    print(np.sum(powers))
+
 if __name__=="__main__":
-    part1()
-    # part2()
+    # part1()
+    part2()
