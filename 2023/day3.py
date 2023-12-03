@@ -31,7 +31,7 @@ def check_line(idx, size, line):
     b2 = False
     if idx > 0:
         b1 = is_symbol(line[idx-1])
-    if idx < len(line):
+    if idx+size < len(line)-1:
         b2 = is_symbol(line[idx + size])
     if b1 or b2:
         return True
@@ -72,7 +72,8 @@ def part1():
     for i, line in enumerate(data):
         curr_nums = []
         numbers, symbols = getNumbersInLine(line)
-        debug = 1
+        if i == 139:
+            debug = 1
         for num in numbers:
             idx = line.find(num)
             size = len(num)
@@ -82,10 +83,11 @@ def part1():
                 curr_nums.append(int(num))
             line = line[:idx] + "."*size + line[idx+size:]
 
-        debug = 1
-        printLines(prev_line, data[i], next_line)
-        print(curr_nums)
-        print("=======================================\n")
+        if i > 138:
+            printLines(prev_line, data[i], next_line)
+            print(curr_nums)
+            print("=======================================\n")
+
         prev_line = data[i]
         if i + 2 < len(data):
             next_line = data[i+2]
@@ -99,6 +101,8 @@ Part 1 notes:
 532672 is to high
 531496 is to high
 531491 is to high
+
+529172 is the answer
 '''
 
 
