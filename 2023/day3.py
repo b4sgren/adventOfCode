@@ -86,14 +86,32 @@ def part1():
 
     print(np.sum(part_nums))
 
+def find_num(line, num):
+    indices = [i for i in range(len(line)) if line[i] == num[0]]
+
+    max_id = len(line)
+
+    vals = []
+    for idx in indices:
+        is_num = True
+        for i in range(1, len(num)):
+            if idx+i >= max_id or line[idx + i] != num[i]:
+                is_num = False
+                break
+        if is_num:
+            vals.append(idx)  # if all digits appear then append the start index
+
+    return vals
+
+
 def get_gear_locations(idx, size, line, gear_dict, num, line_num):
     if idx > 0:
         if line[idx-1] == '*':
             if (line_num, idx-1) not in gear_dict.keys():
                 gear_dict[(line_num, idx-1)] = []
             gear_dict[(line_num, idx-1)].append(num)
-    if idx+size < len(line)-1:  # idx + size to get to end of line. -1 to ignore new line character
 
+    if idx+size < len(line):  # idx + size to get to end of line. -1 to ignore new line character
         if line[idx+size] == '*':
             if (line_num, idx+size) not in gear_dict.keys():
                 gear_dict[(line_num, idx+size)] = []
@@ -110,19 +128,19 @@ def get_gear_locations(idx, size, line, gear_dict, num, line_num):
     return gear_dict
 
 
-
-def is_gear(idx, size, prev_line, line, next_line, gear_dict, num, line_num):
+def is_gear(idxs, size, prev_line, line, next_line, gear_dict, num, line_num):
     # Can be connected to multiple stars
     # prev line
-    if not prev_line is None:
-        gear_dict = get_gear_locations(idx, size, prev_line, gear_dict, num, line_num-1)
+    for idx in idxs:
+        if not prev_line is None:
+            gear_dict = get_gear_locations(idx, size, prev_line, gear_dict, num, line_num-1)
 
-    # current line
-    gear_dict = get_gear_locations(idx, size, line, gear_dict, num, line_num)
+        # current line
+        gear_dict = get_gear_locations(idx, size, line, gear_dict, num, line_num)
 
-    # next line
-    if not next_line is None:
-        gear_dict = get_gear_locations(idx, size, next_line, gear_dict, num, line_num+1)
+        # next line
+        if not next_line is None:
+            gear_dict = get_gear_locations(idx, size, next_line, gear_dict, num, line_num+1)
 
     return gear_dict
 
@@ -130,20 +148,25 @@ def part2():
     with open('day3.txt', 'r') as f:
     # with open('temp.txt', 'r') as f:  # answer is 467835
     # with open('temp2.txt', 'r') as f:  # answer is 6756
-        data = f.readlines()
+        temp = f.readlines()
+        data = [list(line) for line in temp]
 
     gear_dict = {}  # key is index of *, value are the numbers connected to it
 
     prev_line = None
     next_line = data[1]
     for i, line in enumerate(data):
+        line = line[:-1]  # get rid of \n
         numbers, symbols = getNumbersInLine(line)
+        numbers = list(set(numbers))  # get unique elements
+        debug = 1
         for num in numbers:
-            idx = line.find(num)
+            if num == '664':
+                debug = 1
+            # idx = line.find(num)
+            idx = find_num(line, num)
             size = len(num)
             n = int(num)
-            if n == 82:
-                debug = 1
 
             gear_dict = is_gear(idx, size, prev_line, line, next_line, gear_dict, n, i)
 
@@ -153,8 +176,6 @@ def part2():
         else:
             next_line = None
 
-    for line in data:
-        print(line)
     print(gear_dict)
 
     ratio = 0
@@ -166,10 +187,11 @@ def part2():
 '''
 Part 2 notes:
 73307538 is too low
+73904898 is too low
 '''
 
 
 if __name__=="__main__":
-    # part1()
+    part1()
 
     part2()
