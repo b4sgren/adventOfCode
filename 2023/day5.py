@@ -1,6 +1,12 @@
 
-def part1():
+def parseFile(data):
     pass
+
+def part1():
+    with open('temp.txt', 'r') as f:
+    # with open('day5.txt', 'r') as f:
+        data = f.readlines()
+    parseFile(data)
 
 def part2():
     pass
