@@ -24,14 +24,6 @@ def parseSection(data, line_num):
     line_num += 1
     return src_dest_map, line_num
 
-def getValue(val, map):
-    if val in map.keys():
-        ans = map[val]
-    else:
-        ans = val
-
-    return ans
-
 
 def parseFile(data):
     line = data[0].split(':')[1]
@@ -62,26 +54,46 @@ def parseFile(data):
 
     return seeds, seed_soil_map, soil_fertilizer_map, fertilizer_water_map, water_light_map, light_temperature_map, temperature_humidity_map, humidity_location_map
 
+
+def getValueFromMap(val, map):
+    if val in map.keys():
+        ans = map[val]
+    else:
+        ans = val
+
+    return ans
+
+def getValue(src_list, data, line_num):
+    map, line_num = parseSection(data, line_num)
+
+    dest_list = []
+    for val in src_list:
+        dest_list.append(getValueFromMap(val, map))
+
+    return dest_list, line_num
+
+
 def part1():
-    # with open('temp.txt', 'r') as f:
-    with open('day5.txt', 'r') as f:
+    with open('temp.txt', 'r') as f:
+    # with open('day5.txt', 'r') as f:
         data = f.readlines()
-    parseFile(data)
-    seeds, seed_soil_map, soil_fertilizer_map, fertilizer_water_map, water_light_map, light_temperature_map, temperature_humidity_map, humidity_location_map = parseFile(data)
+    # seeds, seed_soil_map, soil_fertilizer_map, fertilizer_water_map, water_light_map, light_temperature_map, temperature_humidity_map, humidity_location_map = parseFile(data)
 
-    location_nums = []
-    for seed in seeds:
-        soil = getValue(seed, seed_soil_map)
-        fertilizer = getValue(soil, soil_fertilizer_map)
-        water = getValue(fertilizer, fertilizer_water_map)
-        light = getValue(water, water_light_map)
-        temperature = getValue(light, light_temperature_map)
-        humidity = getValue(temperature, temperature_humidity_map)
-        location = getValue(humidity, humidity_location_map)
+    line = data[0].split(':')[1]
+    nums = line.split()
+    seeds = [int(val) for val in nums]
+    line_num = 2
 
-        location_nums.append(location)
+    soil, line_num = getValue(seeds, data, line_num)
+    fertilizer, line_num = getValue(soil, data, line_num)
+    water, line_num = getValue(fertilizer, data, line_num)
+    light, line_num = getValue(water, data, line_num)
+    temperature, line_num = getValue(light, data, line_num)
+    humidity, line_num = getValue(temperature, data, line_num)
+    locations, line_num = getValue(humidity, data, line_num)
 
-    print(np.min(location_nums))
+
+    print(np.min(locations))
 
 def part2():
     pass
