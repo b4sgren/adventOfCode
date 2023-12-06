@@ -11,6 +11,24 @@ def parseData(data):
 
     return times, distances
 
+def parseData2(data):
+    line = data[0].split(':')[1]
+    vals = line.split()
+    time = ''
+    for val in vals:
+        time += val
+    times = [int(time)]
+
+    line = data[1].split(':')[1]
+    vals = line.split()
+    dist = ''
+    for val in vals:
+        dist += val
+    distances = [int(dist)]
+
+    return times, distances
+
+
 def findIntMax(time):
     max = int(time/2)
 
@@ -41,7 +59,8 @@ def findWaysToWin(time, record_dist, optimal_hold):
     return counter
 
 def part1():
-    with open('temp2.txt', 'r') as f:
+    # with open('temp2.txt', 'r') as f:
+    with open('day6.txt', 'r') as f:
         data = f.readlines()
 
     times, distances = parseData(data)
@@ -56,9 +75,20 @@ def part1():
 
 
 def part2():
-    pass
+    # with open('temp2.txt', 'r') as f:
+    with open('day6.txt', 'r') as f:
+        data = f.readlines()
+
+    times, distances = parseData2(data)
+
+    ways_to_win = []
+    for time, dist in zip(times, distances):
+        optimal_hold = findIntMax(time)
+        ways_to_win.append(findWaysToWin(time, dist, optimal_hold))
+
+    print(np.product(ways_to_win))
 
 if __name__=="__main__":
-    part1()
+    # part1()
 
     part2()
