@@ -5,10 +5,8 @@ counter_dict = {}
 def parseData(data):
     hands = {}
 
-    # POSSIBLE ISSUES FOR DUPLICATE HANDS!!!
     for line in data:
         vals = line.split()
-        # res = ''.join(sorted(vals[0]))
         res = vals[0]
         hands[str(res)] = int(vals[1])
 
@@ -16,74 +14,15 @@ def parseData(data):
 
 def sorting_func(val):
     card_order = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
-    # card_order = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2', '1']
+
     global counter_dict
     id = []
     for char in val:
         id.append(card_order.index(char))
-    # for pair in counter_dict[val].most_common():
-        # char = pair[0]
-        # id.append(card_order.index(char))
-
-    return id
-
-def sorting_func2(val):
-    card_order = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
-    # card_order = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2', '1']
-    global counter_dict
-    id = []
-    for pair in counter_dict[val].most_common():
-        char = pair[0]
-        id.append(card_order.index(char))
-
-    return id
-
-def sorting_funcHC(val):
-    card_order = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
-    # card_order = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2', '1']
-    global counter_dict
-    id = []
-    for pair in counter_dict[val].most_common():
-        char = pair[0]
-        id.append(card_order.index(char))
-
-    id.sort(reverse=True)
-
-    return id
-
-def sorting_func3(val):
-    card_order = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
-    global counter_dict
-    id = [card_order.index(counter_dict[val].most_common()[0][0])]
-    rest = []
-    for pair in counter_dict[val].most_common()[1:]:
-        char = pair[0]
-        rest.append(card_order.index(char))
-    rest.sort(reverse=True)
-    id.extend(rest)
-
-    return id
-
-def sorting_func2P(val):
-    card_order = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
-    global counter_dict
-    id = [card_order.index(counter_dict[val].most_common()[0][0])]
-    id.append(card_order.index(counter_dict[val].most_common()[1][0]))
-    id.sort(reverse=True)
-    id.append(card_order.index(counter_dict[val].most_common()[-1][0]))
 
     return id
 
 def sortHands(hands, counter_dict):
-
-    # hands['5'].sort(key = sorting_func )
-    # hands['4'].sort(key = sorting_func )
-    # hands['FH'].sort(key = sorting_func )
-    # hands['3'].sort(key = sorting_func3 )  # ok
-    # hands['2P'].sort(key = sorting_func2P )  # ok
-    # hands['P'].sort(key = sorting_func3 )  # ok
-    # hands['HC'].sort(key = sorting_funcHC )  # Ok, i think
-
     hands['5'].sort(key = sorting_func )
     hands['4'].sort(key = sorting_func )
     hands['FH'].sort(key = sorting_func )
@@ -91,7 +30,6 @@ def sortHands(hands, counter_dict):
     hands['2P'].sort(key = sorting_func )  # ok
     hands['P'].sort(key = sorting_func )  # ok
     hands['HC'].sort(key = sorting_func )  # Ok, i think
-    debug = 1
 
     return hands
 
@@ -102,7 +40,6 @@ def part1():
     hands = parseData(data)
 
     hands_dict = {'5':[], '4':[], 'FH':[], '3':[], '2P':[], 'P':[], 'HC':[]}
-    # counter_dict = {}
     for hand, value in hands.items():
         hand_count = Counter(hand)
         unique_cards = len(hand_count)
@@ -139,15 +76,9 @@ def part1():
     sum = 0
     for i, hand in enumerate(hand_order):
         val = hands[hand]
-        print(hand, val)
         sum += (i+1) * val
 
     print(sum)
-
-'''
-248330987 is to high
-248113761
-'''
 
 def part2():
     pass
