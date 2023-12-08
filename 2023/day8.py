@@ -10,18 +10,17 @@ def parseData(data):
         left = line[2][1:4]
         right = line[3][0:3]
 
-        if i == 2:
-            first_node = node
-
         graph[node] = [left, right]
 
-    return graph, directions, first_node
+    return graph, directions
 
 def part1():
     # with open('temp.txt', 'r') as f:
     with open('day8.txt', 'r') as f:
         data = f.readlines()
-    graph, directions, node = parseData(data)
+    graph, directions = parseData(data)
+
+    node = 'AAA'
 
     num_directions = len(directions)
     counter = 0
