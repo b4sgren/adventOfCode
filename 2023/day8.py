@@ -38,7 +38,39 @@ def part1():
 
 
 def part2():
-    pass
+    with open('temp.txt', 'r') as f:
+    # with open('day8.txt', 'r') as f:
+        data = f.readlines()
+    graph, directions = parseData(data)
+
+    nodes = []
+    for key in graph.keys():
+        if key[-1] == 'A':
+            nodes.append(key)
+
+
+    num_directions = len(directions)
+    flag = True
+    counter = 0
+    while flag:
+        direction = directions[counter % num_directions]
+        if direction == 'L':
+            idx = 0
+        else:
+            idx = 1
+
+        num_z = 0
+        for i, node in enumerate(nodes):
+            nodes[i] = graph[node][idx]
+            if nodes[i][-1] == "Z":
+                num_z += 1
+
+        if num_z == len(nodes):
+            flag = False
+
+        counter += 1
+
+    print(counter)
 
 if __name__=="__main__":
     part1()
