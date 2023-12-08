@@ -38,8 +38,8 @@ def part1():
 
 
 def part2():
-    with open('temp.txt', 'r') as f:
-    # with open('day8.txt', 'r') as f:
+    # with open('temp.txt', 'r') as f:
+    with open('day8.txt', 'r') as f:
         data = f.readlines()
     graph, directions = parseData(data)
 
