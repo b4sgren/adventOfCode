@@ -102,8 +102,8 @@ def sortHands2(hands):
 
 
 def part2():
-    with open('temp.txt', 'r') as f:
-    # with open('day7.txt', 'r') as f:
+    # with open('temp.txt', 'r') as f:
+    with open('day7.txt', 'r') as f:
         data = f.readlines()
     hands = parseData(data)
 
