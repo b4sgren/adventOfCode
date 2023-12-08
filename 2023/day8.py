@@ -1,3 +1,5 @@
+import numpy as np
+import math
 
 def parseData(data):
     directions = list(data[0])
@@ -48,6 +50,10 @@ def part2():
         if key[-1] == 'A':
             nodes.append(key)
 
+    orig_nodes = nodes.copy()
+    cycles_found = [False for i in range(len(nodes))]
+    cycle_len = [0 for i in range(len(nodes))]
+
 
     num_directions = len(directions)
     flag = True
@@ -64,13 +70,30 @@ def part2():
             nodes[i] = graph[node][idx]
             if nodes[i][-1] == "Z":
                 num_z += 1
+                cycles_found[i] = True
+                cycle_len[i] = counter
+            # if counter > 0 and nodes[i] == orig_nodes[i] and cycles_found[i] is False:
+            #     cycles_found[i] = True
+            #     cycle_len[i] = counter
+
+        if all(val for val in cycles_found):
+            counter = np.product(cycle_len)
+            flag = False
+            break
 
         if num_z == len(nodes):
             flag = False
 
         counter += 1
 
-    print(counter)
+    # find LCM of a number
+    ans = math.lcm(cycle_len)
+
+    print(ans)
+
+'''
+815342452108675623720 is too high
+'''
 
 if __name__=="__main__":
     part1()
