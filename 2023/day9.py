@@ -38,9 +38,33 @@ def part1():
 
 
 def part2():
-    pass
+    # with open('temp.txt', 'r') as f:
+    with open('day9.txt', 'r') as f:
+        data = f.readlines()
+
+    readings = parseData(data)
+
+    sum = 0
+    for reading in readings:
+        diff = np.diff(reading)
+        history = [reading]
+        while np.any(diff):
+            history.append(diff)
+            diff = np.diff(diff)
+
+        history.reverse()
+        val = 0
+        for i in range(len(history)):
+            val = history[i][0] - val
+
+        # print(val)
+        sum += val
+
+
+    print(sum)
+
 
 if __name__=="__main__":
-    part1()
+    # part1()
 
     part2()
