@@ -52,6 +52,8 @@ def part2():
 
     orig_nodes = nodes.copy()
     cycles_found = [False for i in range(len(nodes))]
+    cycles_start = [False for i in range(len(nodes))]
+    cycle_start_cnt = [0 for i in range(len(nodes))]
     cycle_len = [0 for i in range(len(nodes))]
 
 
@@ -69,12 +71,12 @@ def part2():
         for i, node in enumerate(nodes):
             nodes[i] = graph[node][idx]
             if nodes[i][-1] == "Z":
-                num_z += 1
-                cycles_found[i] = True
-                cycle_len[i] = counter
-            # if counter > 0 and nodes[i] == orig_nodes[i] and cycles_found[i] is False:
-            #     cycles_found[i] = True
-            #     cycle_len[i] = counter
+                if cycles_start[i] is False:
+                    cycles_start[i] = True
+                    cycle_start_cnt[i] = counter
+                elif cycles_found[i] is False:
+                    cycles_found[i] = True
+                    cycle_len[i] = counter - cycle_start_cnt[i]
 
         if all(val for val in cycles_found):
             counter = np.product(cycle_len)
@@ -87,12 +89,13 @@ def part2():
         counter += 1
 
     # find LCM of a number
-    ans = math.lcm(cycle_len)
+    ans = math.lcm(*cycle_len)
 
     print(ans)
 
 '''
 815342452108675623720 is too high
+14935034899483
 '''
 
 if __name__=="__main__":
