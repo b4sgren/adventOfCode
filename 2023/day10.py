@@ -155,8 +155,6 @@ def part2():
                 string += c
             f.write(string + "\n")
 
-    # HAS ISSUES WHEN TRAVERSING EDGES
-    # use jordan curve theorem
     num_inside = 0
     for row, line in enumerate(map):
         crossed_curve = 0
@@ -164,6 +162,7 @@ def part2():
             idx = [row, col]
             # only increment if in loop and one of the following 3 pipes
             # WOuld also work with ['|', 'F', '7']
+            # Couth either both corners going up or both corners going down but dont count both of them
             if idx in visited_node and map[idx[0]][idx[1]] in ['|', 'L', 'J']:
                 crossed_curve += 1
             if idx in visited_node:
@@ -172,22 +171,6 @@ def part2():
                 if crossed_curve % 2 == 1:
                     num_inside += 1
 
-    # is_inside_grid2 = np.zeros((len(map), len(map[0])))
-    # for col in range(0, len(map[0])):
-    #     crossed_curve = 0
-    #     for row, line in enumerate(map):
-    #         idx = [row, col]
-    #         if idx in visited_node and map[idx[0]][idx[1]] != '|':
-    #             crossed_curve += 1
-    #         if idx in visited_node:
-    #             continue
-    #         else:
-    #             if crossed_curve % 2 == 1:
-    #                 is_inside_grid2[row, col] = 1
-
-
-    # num_inside = np.sum(np.logical_and(is_inside_grid, is_inside_grid2))
-    # # num_inside = np.sum(is_inside_grid)
     print(num_inside)
 
 if __name__=="__main__":
