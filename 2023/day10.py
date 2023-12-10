@@ -141,47 +141,56 @@ def part2():
                 if list(nextIdx) not in visited_node and not out_of_range:
                     pipe_queue.append((map[nextIdx[0]][nextIdx[1]], nextIdx, dist+1))
 
-    # HAS ISSUES WHEN TRAVERSING EDGES
-    # use jordan curve theorem
-    is_inside_grid = np.zeros((len(map), len(map[0])))
     for row, line in enumerate(map):
         crossed_curve = 0
         for col in range(0, len(line)):
             idx = [row, col]
-            if idx in visited_node and map[idx[0]][idx[1]] != '-':
-                crossed_curve += 1
-            if idx in visited_node:
-                continue
-            else:
-                if crossed_curve % 2 == 1:
-                    is_inside_grid[row, col] = 1
+            if idx not in visited_node:
+                map[row][col] = '.'
 
+    with open('loop.txt', 'w') as f:
+        for line in map:
+            string = ''
+            for c in line:
+                string += c
+            f.write(string + "\n")
 
-    is_inside_grid2 = np.zeros((len(map), len(map[0])))
-    for col in range(0, len(map[0])):
+    # HAS ISSUES WHEN TRAVERSING EDGES
+    # use jordan curve theorem
+    num_inside = 0
+    for row, line in enumerate(map):
         crossed_curve = 0
-        for row, line in enumerate(map):
+        for col in range(0, len(line)):
             idx = [row, col]
-            if idx in visited_node and map[idx[0]][idx[1]] != '|':
+            # only increment if in loop and one of the following 3 pipes
+            # WOuld also work with ['|', 'F', '7']
+            if idx in visited_node and map[idx[0]][idx[1]] in ['|', 'L', 'J']:
                 crossed_curve += 1
             if idx in visited_node:
                 continue
             else:
                 if crossed_curve % 2 == 1:
-                    is_inside_grid2[row, col] = 1
+                    num_inside += 1
+
+    # is_inside_grid2 = np.zeros((len(map), len(map[0])))
+    # for col in range(0, len(map[0])):
+    #     crossed_curve = 0
+    #     for row, line in enumerate(map):
+    #         idx = [row, col]
+    #         if idx in visited_node and map[idx[0]][idx[1]] != '|':
+    #             crossed_curve += 1
+    #         if idx in visited_node:
+    #             continue
+    #         else:
+    #             if crossed_curve % 2 == 1:
+    #                 is_inside_grid2[row, col] = 1
 
 
-    num_inside = np.sum(np.logical_and(is_inside_grid, is_inside_grid2))
-    # num_inside = np.sum(is_inside_grid)
+    # num_inside = np.sum(np.logical_and(is_inside_grid, is_inside_grid2))
+    # # num_inside = np.sum(is_inside_grid)
     print(num_inside)
 
-    '''
-    1672 is too high
-    465 is too high
-    '''
-
-
 if __name__=="__main__":
-    # part1()
+    part1()
 
     part2()
