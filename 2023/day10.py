@@ -111,8 +111,8 @@ def part1():
 
 def part2():
     # with open('temp.txt', 'r') as f:
-    with open('temp2.txt', 'r') as f:
-    # with open('day10.txt', 'r') as f:
+    # with open('temp2.txt', 'r') as f:
+    with open('day10.txt', 'r') as f:
         data = f.readlines()
     map = [list(line)[:-1] for line in data]
 
@@ -142,23 +142,43 @@ def part2():
                     pipe_queue.append((map[nextIdx[0]][nextIdx[1]], nextIdx, dist+1))
 
     # HAS ISSUES WHEN TRAVERSING EDGES
-    num_inside = 0
+    # use jordan curve theorem
+    is_inside_grid = np.zeros((len(map), len(map[0])))
     for row, line in enumerate(map):
-        inside_loop = False
-        if row <= min_row or row >= max_row:
-            continue
-        for col in range(len(line)):
+        crossed_curve = 0
+        for col in range(0, len(line)):
             idx = [row, col]
+            if idx in visited_node and map[idx[0]][idx[1]] != '-':
+                crossed_curve += 1
             if idx in visited_node:
-                prev_idx = [idx[0], idx[1]-1]
-                next_idx = [idx[0], idx[1]+1]
-                if prev_idx not in visited_node or next_idx not in visited_node:
-                    inside_loop = not inside_loop
                 continue
-            if inside_loop:
-                num_inside += 1
+            else:
+                if crossed_curve % 2 == 1:
+                    is_inside_grid[row, col] = 1
 
+
+    is_inside_grid2 = np.zeros((len(map), len(map[0])))
+    for col in range(0, len(map[0])):
+        crossed_curve = 0
+        for row, line in enumerate(map):
+            idx = [row, col]
+            if idx in visited_node and map[idx[0]][idx[1]] != '|':
+                crossed_curve += 1
+            if idx in visited_node:
+                continue
+            else:
+                if crossed_curve % 2 == 1:
+                    is_inside_grid2[row, col] = 1
+
+
+    num_inside = np.sum(np.logical_and(is_inside_grid, is_inside_grid2))
+    # num_inside = np.sum(is_inside_grid)
     print(num_inside)
+
+    '''
+    1672 is too high
+    465 is too high
+    '''
 
 
 if __name__=="__main__":
