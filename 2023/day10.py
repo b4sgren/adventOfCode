@@ -13,21 +13,25 @@ import numpy as np
 
 def identifyStartingPipe(starting_point, map):
     north_pipe = None
+    use_north = False
     if starting_point[0] > 0:
         north_pipe = map[starting_point[0]-1][starting_point[1]]
         north_idx = np.array(starting_point) + np.array([-1, 0])
         use_north = north_pipe == '|' or north_pipe == 'F' or north_pipe == '7'
     south_pipe = None
+    use_south = False
     if starting_point[0] < len(map):
         south_pipe = map[starting_point[0]+1][starting_point[1]]
         south_idx = np.array(starting_point) + np.array([1, 0])
         use_south = south_pipe == '|' or south_pipe == 'L' or south_pipe == 'J'
     west_pipe = None
+    use_west = False
     if starting_point[1] > 0:
         west_pipe = map[starting_point[0]][starting_point[1]-1]
         west_idx = np.array(starting_point) + np.array([0, -1])
         use_west = west_pipe == '-' or west_pipe == 'F' or west_pipe == 'L'
     east_pipe = None
+    use_east = False
     if starting_point[1] < len(map):
         east_pipe = map[starting_point[0]][starting_point[1]+1]
         east_idx = np.array(starting_point) + np.array([0, 1])
@@ -55,26 +59,26 @@ def getNextIdxs(pipe, idx):
         next_idxs = [idx1, idx2]
     elif pipe == '7':
         idx1 = idx + np.array([0, -1])
-        idx2 = idx + np.array([-1, 0])
+        idx2 = idx + np.array([1, 0])
         next_idxs = [idx1, idx2]
     elif pipe == 'L':
         idx1 = idx + np.array([0, 1])
-        idx2 = idx + np.array([1, 0])
+        idx2 = idx + np.array([-1, 0])
         next_idxs = [idx1, idx2]
     elif pipe == 'J':
         idx1 = idx + np.array([0, -1])
-        idx2 = idx + np.array([1, 0])
+        idx2 = idx + np.array([-1, 0])
         next_idxs = [idx1, idx2]
     elif pipe == 'F':
         idx1 = idx + np.array([0, 1])
-        idx2 = idx + np.array([-1, 0])
+        idx2 = idx + np.array([1, 0])
         next_idxs = [idx1, idx2]
 
     return next_idxs
 
 def part1():
-    with open('temp.txt', 'r') as f:
-    # with open('temp2.txt', 'r') as f:
+    # with open('temp.txt', 'r') as f:
+    with open('temp2.txt', 'r') as f:
     # with open('day10.txt', 'r') as f:
         data = f.readlines()
     map = [list(line)[:-1] for line in data]
