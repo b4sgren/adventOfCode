@@ -78,8 +78,8 @@ def getNextIdxs(pipe, idx):
 
 def part1():
     # with open('temp.txt', 'r') as f:
-    with open('temp2.txt', 'r') as f:
-    # with open('day10.txt', 'r') as f:
+    # with open('temp2.txt', 'r') as f:
+    with open('day10.txt', 'r') as f:
         data = f.readlines()
     map = [list(line)[:-1] for line in data]
 
