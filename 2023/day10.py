@@ -32,7 +32,7 @@ def identifyStartingPipe(starting_point, map):
         use_west = west_pipe == '-' or west_pipe == 'F' or west_pipe == 'L'
     east_pipe = None
     use_east = False
-    if starting_point[1] < len(map):
+    if starting_point[1] < len(map[0]):
         east_pipe = map[starting_point[0]][starting_point[1]+1]
         east_idx = np.array(starting_point) + np.array([0, 1])
         use_east = east_pipe == '-' or east_pipe == 'J' or east_pipe == '7'
@@ -110,9 +110,58 @@ def part1():
 
 
 def part2():
-    pass
+    # with open('temp.txt', 'r') as f:
+    with open('temp2.txt', 'r') as f:
+    # with open('day10.txt', 'r') as f:
+        data = f.readlines()
+    map = [list(line)[:-1] for line in data]
+
+    for i, line in enumerate(map):
+        if 'S' in line:
+            idx = line.index('S')
+            starting_point = [i, idx]
+
+    # Identify type of starting tile
+    starting_pipes = identifyStartingPipe(starting_point, map)
+    visited_node = []  # outlines the loop
+    min_row = len(map)
+    max_row = 0
+    # Perform breadth first search
+    for starting_pipe in starting_pipes:
+        pipe_queue = [(starting_pipe, np.array(starting_point), 0)]
+        while(len(pipe_queue)) > 0:
+            pipe, idx, dist = pipe_queue.pop(0)
+            if min_row > idx[0]: min_row = idx[0]
+            if max_row < idx[0]: max_row = idx[0]
+            visited_node.append(list(idx))
+            nextIdxs = getNextIdxs(pipe, idx)
+            for nextIdx in nextIdxs:
+                out_of_range = nextIdx[0] < 0 or nextIdx[0] >= len(map)
+                out_of_range = out_of_range or nextIdx[1] < 0 or nextIdx[1] >= len(map[1])
+                if list(nextIdx) not in visited_node and not out_of_range:
+                    pipe_queue.append((map[nextIdx[0]][nextIdx[1]], nextIdx, dist+1))
+
+    # HAS ISSUES WHEN TRAVERSING EDGES
+    num_inside = 0
+    for row, line in enumerate(map):
+        inside_loop = False
+        if row <= min_row or row >= max_row:
+            continue
+        for col in range(len(line)):
+            idx = [row, col]
+            if idx in visited_node:
+                prev_idx = [idx[0], idx[1]-1]
+                next_idx = [idx[0], idx[1]+1]
+                if prev_idx not in visited_node or next_idx not in visited_node:
+                    inside_loop = not inside_loop
+                continue
+            if inside_loop:
+                num_inside += 1
+
+    print(num_inside)
+
 
 if __name__=="__main__":
-    part1()
+    # part1()
 
     part2()
