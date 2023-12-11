@@ -128,7 +128,9 @@ def part2():
             if key2 <= key:
                 continue
             num_expanded_cols = 0
-            for i in range(loc[1], loc2[1]):
+            start = min(loc[1], loc2[1])
+            end = max(loc[1], loc2[1])
+            for i in range(start, end):
                 if graph[0][i] == '1000000':
                     num_expanded_cols += 1
 
@@ -138,13 +140,11 @@ def part2():
                     num_expanded_rows += 1
 
             # temp = 1000000 - 1
-            temp = 10  # 1030 on test input
+            temp = 10 - 1  # 1030 on test input
             # temp = 100  # 8410 on test input
             path_length = abs(loc[0] - loc2[0]) + abs(loc[1] - loc2[1]) + temp * (num_expanded_cols + num_expanded_rows)
             path_key = [key, key2]
             path_key.sort()
-            if path_key == [0, 1]:
-                debug = 1
             path_length_dict[tuple(path_key)] = path_length
 
     print(np.sum(list(path_length_dict.values())))
