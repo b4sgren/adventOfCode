@@ -1,3 +1,5 @@
+import math
+import numpy as np
 
 def parseData(data):
     graph = []
@@ -11,6 +13,7 @@ def parseData(data):
             idx = vals.index('#')
             cols_with_galaxies[idx] = True
             vals[idx] = str(counter)
+            counter += 1
         graph.append(vals)
 
     # Append space where no galaxies are in a row/col
@@ -27,14 +30,45 @@ def parseData(data):
                 graph[j].insert(i+offset, '.')
                 offset += 1
 
-    return graph
+    return graph, counter
 
 
 def part1():
     with open('temp.txt', 'r') as f:
         data = f.readlines()
 
-    graph = parseData(data)
+    graph, num_galaxies = parseData(data)
+
+    paths_dict = {}
+    for i in range(num_galaxies-1):
+        for j in range(i+1,num_galaxies):
+            paths_dict[(i, j)] = []
+
+    locations_dict = {}
+    # Can just use addition and subtraction for apsp
+    for i in range(num_galaxies):
+        for j, line in enumerate(graph):
+            if str(i) not in line:
+                continue
+            idx = line.index(str(i))
+            locations_dict[i] = [j, idx]
+            break
+
+    path_length_dict = {}
+    for key, loc in locations_dict.items():
+        for key2, loc2 in locations_dict.items():
+            if key == key2:
+                continue
+
+            path_length = abs(loc[0] - loc2[0]) + abs(loc[1] - loc2[1])
+            path_key = [key, key2]
+            path_key.sort()
+            path_length_dict[tuple(path_key)] = path_length
+
+    print(np.sum(list(path_length_dict.values())))
+
+
+
 
 def part2():
     pass
