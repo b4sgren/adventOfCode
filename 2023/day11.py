@@ -7,7 +7,7 @@ def parseData(data):
     cols_with_galaxies = [False for _ in range(len(data[0]))]
     counter = 0
     for i, line in enumerate(data):
-        vals = list(line)
+        vals = list(line)[:-1]
         while '#' in vals:
             rows_with_galaxies[i] = True
             idx = vals.index('#')
@@ -28,7 +28,7 @@ def parseData(data):
         if not val:
             for j in range(len(graph)):
                 graph[j].insert(i+offset, '.')
-                offset += 1
+            offset += 1
 
     return graph, counter
 
