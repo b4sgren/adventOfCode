@@ -73,7 +73,15 @@ def part2():
     records, broken_groups = parseData(data)
 
     total_combinations = 0
-    for record, group in zip(records, broken_groups):
+    for orig_record, orig_group in zip(records, broken_groups):
+        # Make the problem bigger
+        group = copy(orig_group)
+        record = list(orig_record)
+        for i in range(5):
+            record.append('?')
+            record.extend(list(orig_record))
+            group.extend(orig_group)
+
         record_list = list(record)
         unknown_ids = [i for i,v in enumerate(record_list) if v == '?']
         num_unknown = record_list.count('?')
