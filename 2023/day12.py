@@ -40,7 +40,8 @@ def checkValidCombos(combos, group, orig_record):
     return valid_combos
 
 def part1():
-    with open('temp.txt', 'r') as f:
+    # with open('temp.txt', 'r') as f:
+    with open('input.txt', 'r') as f:
         data = f.readlines()
 
     records, broken_groups = parseData(data)
