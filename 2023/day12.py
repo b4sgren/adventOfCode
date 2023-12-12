@@ -64,11 +64,34 @@ def part1():
 
     print(total_combinations)
 
-
+# Brute force will take way to long. Think about more efficient solution
 def part2():
-    pass
+    with open('temp.txt', 'r') as f:
+    # with open('input.txt', 'r') as f:
+        data = f.readlines()
+
+    records, broken_groups = parseData(data)
+
+    total_combinations = 0
+    for record, group in zip(records, broken_groups):
+        record_list = list(record)
+        unknown_ids = [i for i,v in enumerate(record_list) if v == '?']
+        num_unknown = record_list.count('?')
+        num_broken = record_list.count('#')
+        num_working = record_list.count('.')
+        total_broken = np.sum(group)
+        total_springs = len(record_list)
+
+        broken_springs_left = total_broken - num_broken
+        combos = list(itertools.combinations(unknown_ids, int(broken_springs_left)))
+
+        valid_combos = checkValidCombos(combos, group, record_list)
+        total_combinations += valid_combos
+
+    print(total_combinations)
+
 
 if __name__=="__main__":
-    part1()
+    # part1()
 
     part2()
