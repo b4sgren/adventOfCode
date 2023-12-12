@@ -1,5 +1,7 @@
 import numpy as np
-from math import factorial as f
+from math import factorial as fact
+import itertools
+from copy import deepcopy as copy
 
 def parseData(data):
     record = []
@@ -13,12 +15,37 @@ def parseData(data):
 
     return record, broken_groups
 
+def checkValidCombos(combos, group, orig_record):
+    valid_combos = 0
+    record_size = len(orig_record)
+    for combo in combos:
+        record = copy(orig_record)
+        for id in combo:
+            record[id] = '#'
+
+        temp_group = []
+        count = 0
+        for i, val in enumerate(record):
+            if val != '#':
+                if count > 0: temp_group.append(count)
+                count = 0
+            else:
+                count += 1
+
+        if val == "#": temp_group.append(count)
+
+        if temp_group == group:
+            valid_combos += 1
+
+    return valid_combos
+
 def part1():
     with open('temp.txt', 'r') as f:
         data = f.readlines()
 
     records, broken_groups = parseData(data)
 
+    total_combinations = 0
     for record, group in zip(records, broken_groups):
         record_list = list(record)
         unknown_ids = [i for i,v in enumerate(record_list) if v == '?']
@@ -29,8 +56,12 @@ def part1():
         total_springs = len(record_list)
 
         broken_springs_left = total_broken - num_broken
+        combos = list(itertools.combinations(unknown_ids, int(broken_springs_left)))
 
-        debug = 1
+        valid_combos = checkValidCombos(combos, group, record_list)
+        total_combinations += valid_combos
+
+    print(total_combinations)
 
 
 def part2():
