@@ -103,8 +103,8 @@ def parseData2(data):
 
 
 def part2():
-    with open('temp.txt', 'r') as f:
-    # with open('input.txt', 'r') as f:
+    # with open('temp.txt', 'r') as f:
+    with open('input.txt', 'r') as f:
         data = f.readlines()
 
     graph, num_galaxies = parseData2(data)
