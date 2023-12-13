@@ -36,7 +36,24 @@ def findLineOfSymmetry(pattern):
 
 
     num_rows = len(pattern)
-    # Check symmetry across a horizontal line
+    for line in range(1, num_rows):
+        top_half = pattern[:line]
+        top_half.reverse()
+        bottom_half = pattern[line:]
+        s1 = len(top_half)
+        s2 = len(bottom_half)
+        size = min(s1, s2)
+
+        is_symmetric = True
+        for i in range(size):
+            if top_half[i] != bottom_half[i]:
+                is_symmetric = False
+                break
+
+        if is_symmetric:
+            count += 100*line
+
+    return count
 
 def part1():
     with open('temp.txt', 'r') as f:
