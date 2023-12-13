@@ -27,7 +27,7 @@ def nbconf( record, groups ):
 
 
 somme = 0
-with open('temp.txt', 'r') as f:
+with open('input.txt', 'r') as f:
     for line in f.read().splitlines():
         record, groups = line.split(' ')
         groups = [int(x) for x in groups.split(',')]
@@ -37,6 +37,7 @@ print('Part 1 :', somme)
 
 ## Part 2
 somme = 0
+# with open('input.txt', 'r') as f:
 with open('temp.txt', 'r') as f:
     for line in f.read().splitlines():
         record, groups = line.split(' ')

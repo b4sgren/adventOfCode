@@ -97,8 +97,8 @@ def getNumCombos(record, group):
 
 # Using recursion
 def part1_2():
-    # with open('temp.txt', 'r') as f:
-    with open('input.txt', 'r') as f:
+    with open('temp.txt', 'r') as f:
+    # with open('input.txt', 'r') as f:
         data = f.readlines()
 
     records, broken_groups = parseData(data)
@@ -135,18 +135,13 @@ def part2():
             record.extend(list(orig_record))
             group.extend(orig_group)
 
-        new_str = ''
-        for char in record: new_str += char
-        new_str += '.'  # Make index checking easier at the end
-
-        valid_combos = checkValidCombos2(new_str, group)
-        total_combinations += valid_combos
+        total_combinations += getNumCombos(tuple(record), tuple(group))
 
     print(total_combinations)
 
 
 if __name__=="__main__":
     # part1()
-    part1_2()
+    # part1_2()
 
-    # part2()
+    part2()
