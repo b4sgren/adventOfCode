@@ -85,7 +85,7 @@ def getNumCombos(record, group):
 
     # Compare with length of the first group
     # 1. Verify group can be valid (no '.' in first n characters)
-    # 2. One of the following must be true
+    # 2. Goal is to make sure that record[group[0]] is not '#'. Makes group invalid. However, we have to check that record is long enough to check that index
     # 2a. Check if record is shorten than the group size
     # 2b. Record is bigger than group size and index group[0] is not '#' (invalid group)
     if '.' not in record[:group[0]] and (len(record) <= group[0] or ( len(record) > group[0] and record[group[0]] != '#')):
@@ -110,17 +110,10 @@ def part1_2():
     print(total_combinations)
 
 
-def checkValidCombos2(record, group):
-    if '?' in record:
-        idx = record.find('?')
-
-    # Is this a valid group?
-
-
 # Brute force will take way to long. Think about more efficient solution
 def part2():
-    with open('temp.txt', 'r') as f:
-    # with open('input.txt', 'r') as f:
+    # with open('temp.txt', 'r') as f:
+    with open('input.txt', 'r') as f:
         data = f.readlines()
 
     records, broken_groups = parseData(data)
@@ -128,9 +121,12 @@ def part2():
     total_combinations = 0
     for orig_record, orig_group in zip(records, broken_groups):
         # Make the problem bigger
-        group = copy(orig_group)
+        # group = 5*orig_group
+        # record = (5*(orig_record+'?'))[:-1]
+
         record = list(orig_record)
-        for i in range(5):
+        group = copy(orig_group)
+        for i in range(4):
             record.append('?')
             record.extend(list(orig_record))
             group.extend(orig_group)
