@@ -56,7 +56,8 @@ def findLineOfSymmetry(pattern):
     return count
 
 def part1():
-    with open('temp.txt', 'r') as f:
+    # with open('temp.txt', 'r') as f:
+    with open('input.txt', 'r') as f:
         data = f.readlines()
 
     patterns = parseData(data)
