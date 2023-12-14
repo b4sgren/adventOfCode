@@ -1,4 +1,6 @@
 
+pattern_locations = {}
+
 def parseData(data):
     patterns = []
     pattern = []
@@ -69,7 +71,17 @@ def part1():
     print(count)
 
 def part2():
-    pass
+    # with open('temp.txt', 'r') as f:
+    with open('input.txt', 'r') as f:
+        data = f.readlines()
+
+    patterns = parseData(data)
+
+    count = 0
+    for pattern in patterns:
+        count += findLineOfSymmetry(pattern)
+
+    print(count)
 
 if __name__=="__main__":
     part1()
