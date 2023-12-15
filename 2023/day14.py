@@ -135,8 +135,8 @@ def getWeight(map):
 # Assume it reaches a steady state. When is the same after starting can stop
 # Store the Input and output (induces a cycle)
 def part2():
-    with open("temp2.txt", 'r') as f:
-    # with open("input2.txt", 'r') as f:
+    # with open("temp2.txt", 'r') as f:
+    with open("input2.txt", 'r') as f:
         data = f.readlines()
     map = parseData(data)
     weight = getWeight(map)
