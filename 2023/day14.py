@@ -136,25 +136,36 @@ def getWeight(map):
 # Store the Input and output (induces a cycle)
 def part2():
     with open("temp2.txt", 'r') as f:
+    # with open("input2.txt", 'r') as f:
         data = f.readlines()
     map = parseData(data)
     weight = getWeight(map)
 
-    for i in range(1000000000):
+    num_iters = 1000000000
+    for i in range(num_iters):
         if weight in weight_output_map:
             map = weight_output_map[weight]
+            first_weight = weight
+            weight = getWeight(map)
+            break
         else:
-            weight_output_map[weight] = copy(map)
             map = cycleRocks(map)
-        weight = getWeight(map)
-        # map = cycleRocks(map)
-        # weight = getWeight(map)
-        print(weight)
+            # Associate weight with the next map
+            weight_output_map[weight] = copy(map)
+            weight = getWeight(map)
+        # print(weight)
 
     # Other math to determine the final formation
+    weight_order = [first_weight]
+    loop_length = 1
+    while weight != first_weight:
+        weight_order.append(weight)
+        map = weight_output_map[weight]
+        weight = getWeight(map)
+        loop_length += 1
 
-    # print(i)
-    printMap(map)
+    final_weight = weight_order[(num_iters - i-1)%loop_length]
+    map = weight_output_map[final_weight]
 
     print(getWeight(map))
 
