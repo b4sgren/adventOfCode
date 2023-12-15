@@ -7,7 +7,7 @@ def parseData(data):
     return map
 
 def part1():
-    with open("temp2.txt", 'r') as f:
+    with open("input2.txt", 'r') as f:
         data = f.readlines()
     map = parseData(data)
 
