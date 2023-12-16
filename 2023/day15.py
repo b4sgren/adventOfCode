@@ -26,7 +26,7 @@ def part1():
 
 def part2():
     # with open('temp2.txt', 'r') as f:
-    with open('2023/input2.txt', 'r') as f:
+    with open('input2.txt', 'r') as f:
         data = f.readlines()
 
     strings_list = parseData(data[0])

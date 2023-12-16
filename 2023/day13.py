@@ -76,7 +76,6 @@ def identifyKeyLocation(pattern):
     num_cols = len(pattern[0])
     # Check symmetry across a vertical line
     for line in range(1, num_cols):
-        is_symmetric = True
         diffs = 0
         ids = []
         for r, row in enumerate(pattern):
@@ -87,16 +86,14 @@ def identifyKeyLocation(pattern):
             s2 = len(second_half)
             size = min(s1, s2)
             diff = [n1==n2 for n1,n2 in zip(first_half, second_half)]
-            if diff.count(True) == 1:
-                idx = diff.index(True)
+            if diff.count(False) == 1:
+                idx = diff.index(False)
                 ids.append([r, line])
-            diffs += diff.count(True)
+            diffs += diff.count(False)
             if diffs > 1:
-                is_symmetric = False
                 break
 
-        if is_symmetric:
-            count += line
+        if diffs == 1:
             break
 
     if len(ids) == 1:
@@ -112,39 +109,44 @@ def identifyKeyLocation(pattern):
         s2 = len(bottom_half)
         size = min(s1, s2)
 
-        is_symmetric = True
         diffs = 0
         ids = []
         for i in range(size):
             diff = [n1==n2 for n1,n2 in zip(top_half[i], bottom_half[i])]
-            if diff.count(True) == 1:
-                idx = diff.index(True)
+            if diff.count(False) == 1:
+                idx = diff.index(False)
                 ids.append([line+i, idx])  # not right. Either top_half[i] or bottom half[i]
-            diffs += diff.count(True)
+            diffs += diff.count(False)
             if diffs > 1:
-                is_symmetric = False
                 break
 
-        if is_symmetric:
-            count += 100*line
+        if diffs == 1:
+            break
 
     return ids[0]
 
 
 def part2():
-    # with open('temp.txt', 'r') as f:
-    with open('input.txt', 'r') as f:
+    with open('temp.txt', 'r') as f:
+    # with open('input.txt', 'r') as f:
         data = f.readlines()
 
     patterns = parseData(data)
 
     count = 0
     for pattern in patterns:
-        count += identifyKeyLocation(pattern)
+        id = identifyKeyLocation(pattern)
+        if pattern[id[0]][id[1]] == '.':
+            pattern[id[0]][id[1]] = '#'
+        elif pattern[id[0]][id[1]] == '#':
+            pattern[id[0]][id[1]] = '.'
+
+        count += findLineOfSymmetry(pattern)
+
 
     print(count)
 
 if __name__=="__main__":
-    part1()
+    # part1()
 
     part2()
