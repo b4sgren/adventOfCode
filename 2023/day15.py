@@ -7,7 +7,7 @@ def parseData(data):
     return strings
 
 def part1():
-    with open('temp2.txt', 'r') as f:
+    with open('input2.txt', 'r') as f:
         data = f.readlines()
 
     strings = parseData(data[0])
