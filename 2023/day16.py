@@ -42,14 +42,29 @@ def getNextLocation(loc, grid_val):
 
     return next_loc
 
-def traverseGrid(grid, locations, loc):
+def traverseGrid(grid, locations, current_location):
     # Cycle reached
-    if loc in locations:
-        return grid, locations
+    if current_location is None or current_location in locations:
+        return locations
+    # Outside of grid
+    if current_location[0] >= len(grid) or current_location[1] >= len(grid[0]) or current_location[0] < 0 or current_location[1] < 0:
+        return locations
 
-    locations.add(loc)
-    if grid[loc[0]][loc[1]] == '.':
-        loc = getNextLocation(loc)
+    # Add location to places visited
+    locations.add(current_location)
+    tile = grid[current_location[0]][current_location[1]]
+    next_locations = getNextLocation(current_location, tile)
+    # For whatever reason
+    if next_locations is None:
+        return locations
+
+    # Recursion
+    locations = traverseGrid(grid, locations, next_locations[0])
+    if len(next_locations) == 2:
+        locations = traverseGrid(grid, locations, next_locations[1])
+
+    return locations
+
 
 def part1():
     grid = []
@@ -63,6 +78,7 @@ def part1():
     loc = (0, 0, 0)
 
     locations = traverseGrid(grid, locations, loc)
+    print(len(locations))
 
 def part2():
     pass
