@@ -1,5 +1,6 @@
 
-pattern_locations = {}
+part1_hcounts = []
+part1_vcounts = []
 
 def parseData(data):
     patterns = []
@@ -14,7 +15,7 @@ def parseData(data):
 
     return patterns
 
-def findLineOfSymmetry(pattern):
+def findLineOfSymmetry(pattern, part1 = True):
     count = 0
 
     num_cols = len(pattern[0])
@@ -58,8 +59,8 @@ def findLineOfSymmetry(pattern):
     return count
 
 def part1():
-    # with open('temp.txt', 'r') as f:
-    with open('input.txt', 'r') as f:
+    with open('temp.txt', 'r') as f:
+    # with open('input.txt', 'r') as f:
         data = f.readlines()
 
     patterns = parseData(data)
@@ -97,7 +98,7 @@ def identifyKeyLocation(pattern):
             break
 
     if len(ids) == 1:
-        return ids[0]
+        return size
 
 
     num_rows = len(pattern)
@@ -121,9 +122,10 @@ def identifyKeyLocation(pattern):
                 break
 
         if diffs == 1:
+            return 100*size
             break
 
-    return ids[0]
+    return 0
 
 
 def part2():
@@ -135,18 +137,12 @@ def part2():
 
     count = 0
     for pattern in patterns:
-        id = identifyKeyLocation(pattern)
-        if pattern[id[0]][id[1]] == '.':
-            pattern[id[0]][id[1]] = '#'
-        elif pattern[id[0]][id[1]] == '#':
-            pattern[id[0]][id[1]] = '.'
-
-        count += findLineOfSymmetry(pattern)
+        count += identifyKeyLocation(pattern)
 
 
     print(count)
 
 if __name__=="__main__":
-    # part1()
+    part1()
 
     part2()
