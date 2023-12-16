@@ -25,8 +25,8 @@ def part1():
 
 
 def part2():
-    with open('temp2.txt', 'r') as f:
-    # with open('input2.txt', 'r') as f:
+    # with open('temp2.txt', 'r') as f:
+    with open('2023/input2.txt', 'r') as f:
         data = f.readlines()
 
     strings_list = parseData(data[0])
@@ -45,6 +45,7 @@ def part2():
         elif '=' in string:
             idx = string.index('=')
 
+
         for c in string[:idx]:
             ascii_code = ord(c)
             current_value = 17 * (current_value + ascii_code)
@@ -58,7 +59,7 @@ def part2():
             else:
                 found = False
                 for i, temp in enumerate(hash_map[current_value]):
-                    if vals[0] in temp:
+                    if vals[0] == temp[:len(vals[0])]:
                         found = True
                         hash_map[current_value][i] = label
                         break
@@ -68,20 +69,25 @@ def part2():
             vals = str.split('-')
             label = vals[0] + ' ' + vals[1]
             for i, temp in enumerate(hash_map[current_value]):
-                if vals[0] in hash_map[current_value][i]:
+                if vals[0] == hash_map[current_value][i][:len(vals[0])]:
                     hash_map[current_value].pop(i)
                     break
+        else:
+            debug = 1
 
     sum = 0
     for box_number, vals in hash_map.items():
-        if len(vals) == 0:
-            continue
+        print(vals)
         for i, string in enumerate(vals):
             sum += (box_number+1) * (i+1) * int(string[-1])
 
     print(sum)
 
+'''
+285036 is too low
+'''
+
 if __name__=="__main__":
-    part1()
+    # part1()
 
     part2()
