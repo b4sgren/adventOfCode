@@ -68,29 +68,41 @@ def traverseGrid(grid, locations, current_location):
     return locations
 
 
-def part1():
+def part2():
     grid = []
-    with open('input.txt', 'r') as f:
+    with open('temp.txt', 'r') as f:
         data = f.readlines()
         for line in data:
             grid.append(list(line)[:-1])
 
     # Directions: 0 = from left, 1 = from north, 2 = from right, 3 = from south
-    directed_locations= set()  # Filled with tuple of (row, col, direction in)
-    loc = (0, 0, 0)
+    starting_locations = []
+    for i in range(len(grid[0])):
+        starting_locations.append((0, i, 1))
+        starting_locations.append((len(grid)-1, i, 3))
 
-    directed_locations = traverseGrid(grid, directed_locations, loc)
+    for i in range(len(grid)):
+        starting_locations.append((i, 0, 0))
+        starting_locations.append((i, len(grid[0])-1, 2))
 
-    locations = set()
-    for dloc in directed_locations:
-        loc = (dloc[0], dloc[1])
-        if loc not in locations:
-            locations.add(loc)
+    max_locations_visited = 0
+    for loc0 in starting_locations:
+        directed_locations= set()  # Filled with tuple of (row, col, direction in)
+        directed_locations = traverseGrid(grid, directed_locations, loc0)
 
-    print(len(locations))
+        locations = set()
+        for dloc in directed_locations:
+            loc = (dloc[0], dloc[1])
+            if loc not in locations:
+                locations.add(loc)
+
+        if len(locations) > max_locations_visited:
+            max_locations_visited = len(locations)
+
+    print(max_locations_visited)
 
 # Test all the starting locations
-def part2():
+def part1():
     grid = []
     with open('input.txt', 'r') as f:
         data = f.readlines()
@@ -118,6 +130,6 @@ def part2():
 
 
 if __name__=="__main__":
-    part1()
+    # part1()
 
     part2()
