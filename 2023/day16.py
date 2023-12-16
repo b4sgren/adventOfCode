@@ -1,3 +1,5 @@
+import sys
+sys.setrecursionlimit(10000)
 
 def getNextLocation(loc, grid_val):
     row, col, dir = loc
