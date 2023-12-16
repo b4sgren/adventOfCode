@@ -11,7 +11,18 @@ def part1():
         data = f.readlines()
 
     strings = parseData(data[0])
-    debug = 1
+
+    sum = 0
+    for string in strings:
+        current_value = 0
+        for c in string:
+            ascii_code = ord(c)
+            current_value = 17 * (current_value + ascii_code)
+            current_value = current_value % 256
+        sum += current_value
+
+    print(sum)
+
 
 def part2():
     pass
