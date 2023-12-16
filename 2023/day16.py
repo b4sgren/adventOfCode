@@ -1,6 +1,10 @@
 
 def part1():
-    pass
+    grid = []
+    with open('temp.txt', 'r') as f:
+        data = f.readlines()
+        for line in data:
+            grid.append(list(line)[:-1])
 
 def part2():
     pass
