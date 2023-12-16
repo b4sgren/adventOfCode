@@ -68,7 +68,7 @@ def traverseGrid(grid, locations, current_location):
 
 def part1():
     grid = []
-    with open('temp.txt', 'r') as f:
+    with open('input.txt', 'r') as f:
         data = f.readlines()
         for line in data:
             grid.append(list(line)[:-1])
