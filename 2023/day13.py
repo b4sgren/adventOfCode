@@ -98,7 +98,7 @@ def identifyKeyLocation(pattern):
             break
 
     if len(ids) == 1:
-        return size
+        return len(first_half)
 
 
     num_rows = len(pattern)
@@ -122,15 +122,15 @@ def identifyKeyLocation(pattern):
                 break
 
         if diffs == 1:
-            return 100*size
+            return 100*len(top_half)
             break
 
     return 0
 
 
 def part2():
-    with open('temp.txt', 'r') as f:
-    # with open('input.txt', 'r') as f:
+    # with open('temp.txt', 'r') as f:
+    with open('input.txt', 'r') as f:
         data = f.readlines()
 
     patterns = parseData(data)
@@ -141,6 +141,10 @@ def part2():
 
 
     print(count)
+
+'''
+15670 is too low
+'''
 
 if __name__=="__main__":
     part1()
