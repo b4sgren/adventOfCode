@@ -89,13 +89,33 @@ def part1():
 
     print(len(locations))
 
+# Test all the starting locations
+def part2():
+    grid = []
+    with open('input.txt', 'r') as f:
+        data = f.readlines()
+        for line in data:
+            grid.append(list(line)[:-1])
+
+    # Directions: 0 = from left, 1 = from north, 2 = from right, 3 = from south
+    directed_locations= set()  # Filled with tuple of (row, col, direction in)
+    loc = (0, 0, 0)
+
+    directed_locations = traverseGrid(grid, directed_locations, loc)
+
+    locations = set()
+    for dloc in directed_locations:
+        loc = (dloc[0], dloc[1])
+        if loc not in locations:
+            locations.add(loc)
+
+    print(len(locations))
+
     # for loc in locations:
     #     grid[loc[0]][loc[1]] = '#'
 
     # for line in grid: print(line)
 
-def part2():
-    pass
 
 if __name__=="__main__":
     part1()
