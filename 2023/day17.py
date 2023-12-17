@@ -1,4 +1,5 @@
 import numpy as np
+from copy import deepcopy as copy
 
 def findShortestPath(grid, source, target):
     grid_distances = np.ones_like(grid) * 1e8
@@ -25,6 +26,19 @@ def findShortestPath(grid, source, target):
         temp = [source + north, source + south, source + east, source + west]
         neighbors = [loc for loc in temp if list(loc) in queue]
         for neighbor in neighbors:
+            # Determine if this is a valid neighbor
+            prev = copy(source)
+            curr = copy(neighbor)
+            diff = np.zeros(2)
+            for _ in range(4):
+                diff += np.array(curr) - np.array(prev)
+                curr = prev
+                if tuple(curr) in prev_node:
+                    prev = list(prev_node[tuple(curr)])
+                else:
+                    break
+            if np.max(np.abs(diff)) > 3:
+                continue
             alt = grid_distances[source[0], source[1]] + grid[neighbor[0], neighbor[1]]
             if alt < grid_distances[neighbor[0], neighbor[1]]:
                 grid_distances[neighbor[0], neighbor[1]] = alt
