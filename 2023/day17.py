@@ -2,54 +2,70 @@ import numpy as np
 np.set_printoptions(linewidth=200)
 from copy import deepcopy as copy
 
-def findShortestPath(grid, source, target):
-    grid_distances = np.ones_like(grid) * 1e8
-    prev_node = {}
-    queue = [[i, j] for i in range(len(grid)) for j in range(len(grid[0]))]
-    grid_distances[source[0], source[1]] = 0
+# Things to try
+'''
+Graph has 3 states (x, y, direction)
+The grid is not the graph. Use the grid to build up the graph and find the shortest path dynamically
+Still Use djikstras algorithm with my 3 path limit
+Prev_node will be a function of 3 states
+'''
 
-    north = np.array([-1, 0])
-    south = np.array([1, 0])
-    east = np.array([0, 1])
-    west = np.array([0, -1])
-    # while list(source) != list(target) and len(queue) > 0:
-    while len(queue) > 0:
-        # Not min index but index of nodes left in queue that is the min
+# facing north: 1, facing west: 2, facing south:3, facing east:4
+def getNeighbors(source):
+    neighbors = []
+    if source[-1] != 3:
+        neighbors.append((source[0]-1, source[1], 1))
+    if source[-1] != 4:
+        neighbors.append((source[0], source[1]-1, 2))
+    if source[-1] != 1:
+        neighbors.append((source[0]+1, source[1], 3))
+    if source[-1] != 2:
+        neighbors.append((source[0], source[1]+1, 4))
+
+    return neighbors
+
+def findShortestPath(grid, source, target):
+    prev_node = {tuple(source):None}
+    queue = set([(i, j, k) for i in range(len(grid)) for j in range(len(grid[0])) for k in range(1, 5)])  # x, y, direction
+    grid_distances = {}
+    for q in queue:
+        grid_distances[q] = 1e8
+    grid_distances[(0, 0, 1)] = 0
+
+    while source not in target and len(queue) > 0:
         min_dist = 1e8
         for q in queue:
-            if grid_distances[q[0], q[1]] < min_dist:
-                min_dist = grid_distances[q[0], q[1]]
+            if grid_distances[q] < min_dist:
+                min_dist = grid_distances[q]
                 source = q
 
-        idx = queue.index(list(source))
-        queue.pop(idx)
-        if source == [1, 4]:
-            debug = 1
-
-        # Probably need to check to make sure I havent gone 3 straight yet
-        neighbors = [source + north, source + south, source + east, source + west]
+        queue.remove(source)
+        # Edit to work with tuples. Do in a function
+        neighbors = getNeighbors(source)
         for neighbor in neighbors:
             # Determine if this is a valid neighbor
             if neighbor[0] < 0 or neighbor[0] >= len(grid) or neighbor[1] < 0 or neighbor[1] >= len(grid[0]):
                 continue
+
             prev = copy(source)
             curr = copy(neighbor)
-            diff = np.zeros(2)
+            diff = np.zeros(3)
             for _ in range(4):
+                if prev is None:
+                    break
                 diff += np.array(curr) - np.array(prev)
                 curr = prev
                 if tuple(curr) in prev_node:
-                    prev = list(prev_node[tuple(curr)])
+                    prev = prev_node[curr]
                 else:
                     break
-            if np.max(np.abs(diff)) > 3:
+            if np.max(np.abs(diff[:2])) > 3:
                 continue
-            alt = grid_distances[source[0], source[1]] + grid[neighbor[0], neighbor[1]]
-            if alt < grid_distances[neighbor[0], neighbor[1]]:
-                grid_distances[neighbor[0], neighbor[1]] = alt
-                prev_node[tuple(neighbor)] = tuple(source)
+            alt = grid_distances[source] + grid[neighbor[0], neighbor[1]]
+            if alt < grid_distances[neighbor]:
+                grid_distances[neighbor] = alt
+                prev_node[neighbor] = source
                 debug = 1
-        debug = 1
 
     # Get path
     path = [target]
@@ -64,7 +80,7 @@ def findShortestPath(grid, source, target):
         grid[val[0], val[1]] = 0
     print(grid)
 
-    return grid_distances[target[0], target[1]]
+    return grid_distances[source]
 
 '''
 1  function Dijkstra(Graph, source):
@@ -100,8 +116,9 @@ def part1():
         grid.append(row)
     grid  = np.array(grid)
 
-    source = np.array([0, 0])  # because of padding
-    target = np.array([len(grid)-1, len(grid[0])-1])
+    source = (0, 0, 1)  # because of padding
+    target = [(len(grid)-1, len(grid[0])-1, 1), (len(grid)-1, len(grid[0])-1, 2), (len(grid)-1, len(grid[0])-1, 3), (len(grid)-1, len(grid[0])-1, 4)]
+
     path_length = findShortestPath(grid, source, target)
     # path_length = findShortestPath(grid, target, source)
 
