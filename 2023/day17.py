@@ -1,4 +1,5 @@
 import numpy as np
+np.set_printoptions(linewidth=200)
 from copy import deepcopy as copy
 
 def findShortestPath(grid, source, target):
@@ -11,22 +12,26 @@ def findShortestPath(grid, source, target):
     south = np.array([1, 0])
     east = np.array([0, 1])
     west = np.array([0, -1])
-    steps_map = {'N':0, 'S':0, 'E':0, 'W':0}
-    while list(source) != list(target) and len(queue) > 0:
+    # while list(source) != list(target) and len(queue) > 0:
+    while len(queue) > 0:
         # Not min index but index of nodes left in queue that is the min
         min_dist = 1e8
         for q in queue:
             if grid_distances[q[0], q[1]] < min_dist:
+                min_dist = grid_distances[q[0], q[1]]
                 source = q
 
         idx = queue.index(list(source))
         queue.pop(idx)
+        if source == [1, 4]:
+            debug = 1
 
         # Probably need to check to make sure I havent gone 3 straight yet
-        temp = [source + north, source + south, source + east, source + west]
-        neighbors = [loc for loc in temp if list(loc) in queue]
+        neighbors = [source + north, source + south, source + east, source + west]
         for neighbor in neighbors:
             # Determine if this is a valid neighbor
+            if neighbor[0] < 0 or neighbor[0] >= len(grid) or neighbor[1] < 0 or neighbor[1] >= len(grid[0]):
+                continue
             prev = copy(source)
             curr = copy(neighbor)
             diff = np.zeros(2)
@@ -43,6 +48,21 @@ def findShortestPath(grid, source, target):
             if alt < grid_distances[neighbor[0], neighbor[1]]:
                 grid_distances[neighbor[0], neighbor[1]] = alt
                 prev_node[tuple(neighbor)] = tuple(source)
+                debug = 1
+        debug = 1
+
+    # Get path
+    path = [target]
+    node = target
+    while tuple(node) in prev_node:
+        node = list(prev_node[tuple(node)])
+        path.append(node)
+    path.reverse()
+
+    print(path)
+    for val in path:
+        grid[val[0], val[1]] = 0
+    print(grid)
 
     return grid_distances[target[0], target[1]]
 
@@ -83,6 +103,7 @@ def part1():
     source = np.array([0, 0])  # because of padding
     target = np.array([len(grid)-1, len(grid[0])-1])
     path_length = findShortestPath(grid, source, target)
+    # path_length = findShortestPath(grid, target, source)
 
     print(path_length)
 
