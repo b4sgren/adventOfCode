@@ -15,6 +15,14 @@ def part1():
 
     directions, distances, colors = parseData(data)
 
+    # Get max rows/cols
+
+    # Outline the loop
+
+    # Flood fill
+
+    # Count size
+
 def part2():
     pass
 
