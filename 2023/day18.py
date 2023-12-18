@@ -27,8 +27,8 @@ def floodFill(grid, loc):
     return grid
 
 def part1():
-    with open('temp2.txt', 'r') as f:
-    # with open('input2.txt', 'r') as f:
+    # with open('temp2.txt', 'r') as f:
+    with open('input2.txt', 'r') as f:
         data = f.readlines()
 
     directions, distances, colors = parseData(data)
@@ -73,8 +73,13 @@ def part1():
     # Flood fill
     grid = floodFill(grid, [1, 1])
 
-    for line in grid:
-        print(line)
+    with open('grid.txt', 'w') as f:
+        line_str = ''
+        for line in grid:
+            for val in line:
+                line_str += val
+            line_str += '\n'
+            f.write(line_str)
 
     # Count size
     count = 0
@@ -82,6 +87,10 @@ def part1():
         count += row.count('#')
         count += row.count('0')
     print(count)
+
+'''
+10307 is too low
+'''
 
 def part2():
     pass
