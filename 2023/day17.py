@@ -13,14 +13,14 @@ Prev_node will be a function of 3 states
 # facing north: 1, facing west: 2, facing south:3, facing east:4
 def getNeighbors(source):
     neighbors = []
-    if source[-1] != 3:
-        neighbors.append((source[0]-1, source[1], 1))
-    if source[-1] != 4:
-        neighbors.append((source[0], source[1]-1, 2))
     if source[-1] != 1:
         neighbors.append((source[0]+1, source[1], 3))
     if source[-1] != 2:
         neighbors.append((source[0], source[1]+1, 4))
+    if source[-1] != 3:
+        neighbors.append((source[0]-1, source[1], 1))
+    if source[-1] != 4:
+        neighbors.append((source[0], source[1]-1, 2))
 
     return neighbors
 
@@ -33,7 +33,9 @@ def findShortestPath(grid, source, target):
     grid_distances[(0, 0, 1)] = 0
 
     while source not in target and len(queue) > 0:
-        min_dist = 1e8
+    # while len(queue) > 0:
+        min_dist = 1e9
+        source = None
         for q in queue:
             if grid_distances[q] < min_dist:
                 min_dist = grid_distances[q]
@@ -67,15 +69,15 @@ def findShortestPath(grid, source, target):
                 prev_node[neighbor] = source
                 debug = 1
 
-    # Get path
-    path = []
-    node = copy(source)
-    while prev_node[node] is not None:
-        path.append(node)
-        node = prev_node[node]
-    path.append(node)
-    path.reverse()
-    print(path)
+    # # Get path
+    # path = []
+    # node = copy(source)
+    # while prev_node[node] is not None:
+    #     path.append(node)
+    #     node = prev_node[node]
+    # path.append(node)
+    # path.reverse()
+    # print(path)
 
     return grid_distances[source]
 
@@ -91,7 +93,7 @@ def part1():
         grid.append(row)
     grid  = np.array(grid)
 
-    source = (0, 0, 1)  # because of padding
+    source = (0, 0, 3)  # because of padding
     target = [(len(grid)-1, len(grid[0])-1, 1), (len(grid)-1, len(grid[0])-1, 2), (len(grid)-1, len(grid[0])-1, 3), (len(grid)-1, len(grid[0])-1, 4)]
 
     path_length = findShortestPath(grid, source, target)
