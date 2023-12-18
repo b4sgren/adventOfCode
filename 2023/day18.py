@@ -1,3 +1,5 @@
+import sys
+sys.setrecursionlimit(10000)
 
 def parseData(data):
     directions, distances, colors = [], [], []
@@ -9,8 +11,24 @@ def parseData(data):
 
     return directions, distances, colors
 
+def floodFill(grid, loc):
+    if loc[0] < 0 or loc[0] >= len(grid) or loc[1] < 0 or loc[1] >= len(grid[0]):
+        return grid
+    # reached a border or an index already filled
+    if grid[loc[0]][loc[1]] == '#' or grid[loc[0]][loc[1]] == '0':
+        return grid
+
+    grid[loc[0]][loc[1]] = '0'
+    grid = floodFill(grid, [loc[0]+1, loc[1]])
+    grid = floodFill(grid, [loc[0]-1, loc[1]])
+    grid = floodFill(grid, [loc[0], loc[1]+1])
+    grid = floodFill(grid, [loc[0], loc[1]-1])
+
+    return grid
+
 def part1():
     with open('temp2.txt', 'r') as f:
+    # with open('input2.txt', 'r') as f:
         data = f.readlines()
 
     directions, distances, colors = parseData(data)
@@ -51,16 +69,18 @@ def part1():
 
             grid[row][col] = '#'
 
-    for line in grid:
-        print(line)
 
     # Flood fill
-    # grid = floodFill(grid)
+    grid = floodFill(grid, [1, 1])
+
+    for line in grid:
+        print(line)
 
     # Count size
     count = 0
     for row in grid:
         count += row.count('#')
+        count += row.count('0')
     print(count)
 
 def part2():
