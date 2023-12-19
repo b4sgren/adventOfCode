@@ -30,8 +30,8 @@ def floodFill(grid, loc):
 
 # TODO: Need to handle going up initially. Edit to starting location
 def part1():
-    with open('temp2.txt', 'r') as f:
-    # with open('input2.txt', 'r') as f:
+    # with open('temp2.txt', 'r') as f:
+    with open('input2.txt', 'r') as f:
         data = f.readlines()
 
     directions, distances, colors = parseData(data)
@@ -115,12 +115,13 @@ def part2():
     with open('input2.txt', 'r') as f:
         data = f.readlines()
 
-    _, _, colors = parseData(data)
+    directions, distances, colors = parseData(data)
     directions, distances = colors2Instructions(colors)
 
     # need to detect areas
     r, c = 0, 0
     corners = [[r, c]]
+    perimeter = 0
     for dir, dist in zip(directions, distances):
         if dir == 'R':
             c += dist
@@ -132,16 +133,21 @@ def part2():
             r += dist
         else:
             print("BAD DIRECTION")
+        perimeter += dist
         corners.append([r, c])
 
+
     # Calculate area using the shoelace algorithm
+    # Follow this with picks theorem: A = I + B/2 - 1. Then solve for I
     sum1 = 0
     sum2 = 0
     for i in range(len(corners)):
         idx = (i+1) % len(corners)  # cover the last case when it wraps
-        sum1 += corners[i][0] * corners[idx][1]
-        sum2 += corners[idx][0] * corners[i][1]
-    area = abs(0.5 * (sum1-sum2))
+        sum1 += int(corners[i][0] * corners[idx][1])
+        sum2 += int(corners[idx][0] * corners[i][1])
+    area = abs(int(0.5 * (sum1-sum2)))
+
+    area = area + perimeter/2 + 1
 
     print(area)
 
