@@ -78,11 +78,11 @@ def part1():
 
     # Flood fill
     x0 = [abs(min_rows)+1, abs(min_cols) + 1]
-    grid = floodFill(grid, x0)
+    # grid = floodFill(grid, x0)
 
     with open('grid.txt', 'w') as f:
-        line_str = ''
         for line in grid:
+            line_str = ''
             for val in line:
                 line_str += val
             line_str += '\n'
