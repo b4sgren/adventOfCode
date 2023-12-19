@@ -138,7 +138,10 @@ def part2():
 
 
     # Calculate area using the shoelace algorithm
-    # Follow this with picks theorem: A = I + B/2 - 1. Then solve for I
+    # Area doesn't include parts due to perimeter. Use Picks theorem
+    # Follow this with picks theorem: A = I + B/2 + 1. Then solve for I
+    # Shoelace produces I. Calc perimeter with side lengths
+    # See this thread: https://www.reddit.com/r/adventofcode/comments/18lg2we/2023_day_18_why_1_instead_of_1/
     sum1 = 0
     sum2 = 0
     for i in range(len(corners)):
