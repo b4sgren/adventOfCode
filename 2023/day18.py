@@ -26,6 +26,7 @@ def floodFill(grid, loc):
 
     return grid
 
+# TODO: Need to handle going up initially. Edit to starting location
 def part1():
     # with open('temp2.txt', 'r') as f:
     with open('input2.txt', 'r') as f:
@@ -34,27 +35,32 @@ def part1():
     directions, distances, colors = parseData(data)
 
     # Get max rows/cols. Assume it won't go negative
+    rows = 0
+    cols = 0
     max_rows = 1
-    net_rows = 0
+    min_rows = 0
     max_cols = 1
-    net_cols = 0
+    min_cols = 0
     for dir, dist in zip(directions, distances):
         if dir == 'D':
-            max_rows += dist
-            net_rows += dist
+            rows += dist
+            if rows > max_rows: max_rows = rows
         elif dir == 'U':
-            net_rows -= dist
+            rows -= dist
+            if rows < min_rows: min_rows = rows
         elif dir == 'R':
-            max_cols += dist
-            net_cols += dist
+            cols += dist
+            if cols > max_cols: max_cols = cols
         elif dir == 'L':
-            net_cols -= dist
+            cols -= dist
+            if cols < min_cols: min_cols = cols
 
     # Outline the loop
-    grid = [['.' for i in range(max_cols)] for _ in range(max_rows)]
-    grid[0][0] = '#'
-    row, col = 0, 0
+    grid = [['.' for i in range(max_cols - min_cols+1)] for _ in range(max_rows-min_rows+1)]
+    row, col = abs(min_rows), abs(min_cols)
+    grid[row][col] = '#'
     for dir, dist in zip(directions, distances):
+        debug = 1
         for i in range(dist):
             if dir == 'R':
                 col += 1
@@ -71,7 +77,8 @@ def part1():
 
 
     # Flood fill
-    grid = floodFill(grid, [1, 1])
+    x0 = [abs(min_rows)+1, abs(min_cols) + 1]
+    grid = floodFill(grid, x0)
 
     with open('grid.txt', 'w') as f:
         line_str = ''
