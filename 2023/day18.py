@@ -12,17 +12,19 @@ def parseData(data):
     return directions, distances, colors
 
 def floodFill(grid, loc):
-    if loc[0] < 0 or loc[0] >= len(grid) or loc[1] < 0 or loc[1] >= len(grid[0]):
-        return grid
-    # reached a border or an index already filled
-    if grid[loc[0]][loc[1]] == '#' or grid[loc[0]][loc[1]] == '0':
-        return grid
+    queue = [loc]
 
-    grid[loc[0]][loc[1]] = '0'
-    grid = floodFill(grid, [loc[0]+1, loc[1]])
-    grid = floodFill(grid, [loc[0]-1, loc[1]])
-    grid = floodFill(grid, [loc[0], loc[1]+1])
-    grid = floodFill(grid, [loc[0], loc[1]-1])
+    while len(queue) > 0:
+        loc = queue.pop()
+        r, c = loc
+        if grid[r][c] == '#' or grid[r][c] == '0':
+            continue
+
+        grid[loc[0]][loc[1]] = '0'
+        queue.append([r+1, c])
+        queue.append([r-1, c])
+        queue.append([r, c+1])
+        queue.append([r, c-1])
 
     return grid
 
@@ -77,8 +79,8 @@ def part1():
 
 
     # Flood fill
-    x0 = [abs(min_rows)+1, abs(min_cols) + 1]
-    # grid = floodFill(grid, x0)
+    x0 = [abs(min_rows) + 1, abs(min_cols) + 1]
+    grid = floodFill(grid, x0)
 
     with open('grid.txt', 'w') as f:
         for line in grid:
