@@ -97,12 +97,28 @@ def part1():
         count += row.count('0')
     print(count)
 
-'''
-10307 is too low
-'''
+def colors2Instructions(colors):
+    directions, distances = [], []
+    for color in colors:
+        char = color[-1]
+        if char == '0': directions.append('R')
+        if char == '1': directions.append('D')
+        if char == '2': directions.append('L')
+        if char == '3': directions.append('U')
+
+        distances.append(int(color[1:-1], 16))
+
+    return directions, distances
 
 def part2():
-    pass
+    with open('temp2.txt', 'r') as f:
+    # with open('input2.txt', 'r') as f:
+        data = f.readlines()
+
+    _, _, colors = parseData(data)
+    directions, distances = colors2Instructions(colors)
+
+    debug = 1
 
 if __name__=="__main__":
     part1()
