@@ -30,8 +30,8 @@ def floodFill(grid, loc):
 
 # TODO: Need to handle going up initially. Edit to starting location
 def part1():
-    # with open('temp2.txt', 'r') as f:
-    with open('input2.txt', 'r') as f:
+    with open('temp2.txt', 'r') as f:
+    # with open('input2.txt', 'r') as f:
         data = f.readlines()
 
     directions, distances, colors = parseData(data)
@@ -111,14 +111,44 @@ def colors2Instructions(colors):
     return directions, distances
 
 def part2():
-    with open('temp2.txt', 'r') as f:
-    # with open('input2.txt', 'r') as f:
+    # with open('temp2.txt', 'r') as f:
+    with open('input2.txt', 'r') as f:
         data = f.readlines()
 
     _, _, colors = parseData(data)
     directions, distances = colors2Instructions(colors)
 
-    debug = 1
+    # need to detect areas
+    r, c = 0, 0
+    corners = [[r, c]]
+    for dir, dist in zip(directions, distances):
+        if dir == 'R':
+            c += dist
+        elif dir == 'L':
+            c -= dist
+        elif dir == 'U':
+            r -= dist
+        elif dir == 'D':
+            r += dist
+        else:
+            print("BAD DIRECTION")
+        corners.append([r, c])
+
+    # Calculate area using the shoelace algorithm
+    sum1 = 0
+    sum2 = 0
+    for i in range(len(corners)):
+        idx = (i+1) % len(corners)  # cover the last case when it wraps
+        sum1 += corners[i][0] * corners[idx][1]
+        sum2 += corners[idx][0] * corners[i][1]
+    area = abs(0.5 * (sum1-sum2))
+
+    print(area)
+
+'''
+96556165374331  not right
+'''
+
 
 if __name__=="__main__":
     part1()
