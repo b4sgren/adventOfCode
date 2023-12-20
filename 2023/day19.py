@@ -81,8 +81,15 @@ def part1():
 
     print(sum)
 
+# How many combinations of ratings will be accepted
+# Range from 1 to 4000 for each part#
 def part2():
-    pass
+    with open('temp2.txt', 'r') as f:
+    # with open('input2.txt', 'r') as f:
+        data = f.readlines()
+
+    _, instructions = parseData(data)
+
 
 if __name__=="__main__":
     part1()
