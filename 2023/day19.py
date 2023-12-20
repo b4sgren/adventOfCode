@@ -4,12 +4,29 @@ class Part:
         self.m = tokens[1]
         self.a = tokens[2]
         self.s = tokens[3]
+        self.map = {'x': self.x, 'm': self.m, 'a':self.a, 's':self.s}
+
+    def sum(self):
+        return self.x + self.m + self.a + self.s
+
+    def getVal(self, char):
+        return self.map[char]
 
 class Instructions:
     def __init__(self, inst, default_instr):
         self.default_instr = default_instr
         # [part value, symbol operator, threshold, next instr]
         self.instructions = inst
+
+    def execute(self, part):
+        for instruction in self.instructions:
+            if instruction[1] == '<' and part.getVal(instruction[0]) < instruction[2]:
+                return instruction[-1]
+            elif instruction[1] == '>' and part.getVal(instruction[0]) > instruction[2]:
+                return instruction[-1]
+        # return default instruction
+        return self.default_instr
+
 
 def parseData(data):
     parts = []
@@ -51,6 +68,17 @@ def part1():
     parts, instructions = parseData(data)
 
     # begin in workflow named in
+    sum = 0
+    for part in parts:
+        instruction = 'in'
+        while instruction != 'A' and instruction != 'R':
+            instruction = instructions[instruction].execute(part)
+
+        print(instruction)
+        if instruction =='A':
+            sum += part.sum()
+
+    print(sum)
 
 def part2():
     pass
