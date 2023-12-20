@@ -62,7 +62,8 @@ def parseData(data):
 
 
 def part1():
-    with open('temp2.txt', 'r') as f:
+    # with open('temp2.txt', 'r') as f:
+    with open('input2.txt', 'r') as f:
         data = f.readlines()
 
     parts, instructions = parseData(data)
