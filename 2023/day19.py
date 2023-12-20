@@ -27,6 +27,16 @@ class Instructions:
         # return default instruction
         return self.default_instr
 
+    def execute2(self, part):
+        for instruction in self.instructions:
+            if instruction[1] == '<' and part.getVal(instruction[0]) < instruction[2]:
+                return instruction[-1], part.getVal[instruction[0]]
+            elif instruction[1] == '>' and part.getVal(instruction[0]) > instruction[2]:
+                return instruction[-1], part.getVal[instruction[0]]
+        # return default instruction
+        return self.default_instr
+
+
 
 def parseData(data):
     parts = []
@@ -81,6 +91,18 @@ def part1():
 
     print(sum)
 
+def findNumCombosThatPass(instructions, key, lower_bnd, upper_bnd):
+    instruction = instructions[key]
+
+    # Iterate over each and calculate upper and lower bounds
+    for instr in instruction.instructions:
+        if instr[1] == '<':
+            pass
+        elif instr[1] == '>':
+            pass
+        debug = 1
+
+
 # How many combinations of ratings will be accepted
 # Range from 1 to 4000 for each part#
 def part2():
@@ -89,6 +111,11 @@ def part2():
         data = f.readlines()
 
     _, instructions = parseData(data)
+
+    lb = {'x':1, 'm':1, 'a':1, 's':1}  # inclusive
+    ub = {'x':4001, 'm':4001, 'a':4001, 's':4001}  # exclusive
+    sum = findNumCombosThatPass(instructions, 'in', lb, ub)
+    # Always start with instruction in
 
 
 if __name__=="__main__":
