@@ -1,0 +1,99 @@
+import numpy as np
+
+class FlipFlopModule:
+    def __init__(self, targets):
+        self.state = 0  # Initially off
+        self.targets = targets
+
+    def inputPulse(self, sender, pulse_type):
+        if pulse_type == 1:
+            return None
+        self.state = 1 - self.state  # flip state
+        return self.state  # if on send high pulse, if off send low
+
+class ConjuctionModule:
+    def __init__(self, targets):
+        # default remember a low pulse
+        self.inputs = {}  # sender is key, pulse type is value
+        self.targets = targets
+
+    def inputPulse(self, sender, pulse_type):
+        if sender not in  self.inputs.keys():
+            self.inputs[sender] = 0
+        self.inputs[sender] = pulse_type
+
+        values = np.array(list(self.inputs.values()))
+        if np.all(values == 1):
+            return 0  # send low pulse
+        else:
+            return 1  # send high pulse
+
+class BroadcasterModule:
+    def __init__(self, targets):
+        self.targets = targets
+
+    # Outputs the pulse type passed on
+    def inputPulse(self, sender, pulse_type):
+        return pulse_type
+
+def parseData(data):
+    src_target_map = {}
+    module_map = {}
+
+    for line in data:
+        line = ''.join(line.split())  # remove white space
+        vals = line.split('->')
+        targets = vals[1].split(',')
+        if vals[0][0] == 'b':
+            # broadcaster
+            module_id = vals[0]
+            module_map[module_id] = BroadcasterModule(targets)
+        elif vals[0][0] == '%':
+            # flip flop
+            module_id = vals[0][1:]
+            module_map[module_id] = FlipFlopModule(targets)
+        elif vals[0][0] == '&':
+            # conjuction module
+            module_id = vals[0][1:]
+            module_map[module_id] = ConjuctionModule(targets)
+
+        src_target_map[module_id] = targets
+
+    return module_map
+
+
+def part1():
+    with open('temp2.txt', 'r') as f:
+        data = f.readlines()
+
+    module_map = parseData(data)
+
+    num_pulses = {0:0, 1:0}
+    for i in range(1000):
+        pulse_queue = []  # tuples of (sender, receiver, pulse)
+        pulse = module_map['broadcaster'].inputPulse('button', 0)
+        num_pulses[0] += 1
+        for target in module_map['broadcaster'].targets:
+            pulse_queue.append(('broadcaster', target, pulse))
+
+        while len(pulse_queue) > 0:
+            sender, target, pulse = pulse_queue.pop()
+            num_pulses[pulse] += 1
+            if target not in module_map.keys():
+                continue
+            output_pulse = module_map[target].inputPulse(sender, pulse)
+            if output_pulse is None:
+                continue
+            for next_target in module_map[target].targets:
+                pulse_queue.append((target, next_target, output_pulse))
+
+    print(num_pulses[0] * num_pulses[1])
+
+
+def part2():
+    pass
+
+if __name__=="__main__":
+    part1()
+
+    part2()
