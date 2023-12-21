@@ -141,8 +141,8 @@ def findNumCombosThatPass(instructions, key, lb, ub):
 # How many combinations of ratings will be accepted
 # Range from 1 to 4000 for each part#
 def part2():
-    with open('temp2.txt', 'r') as f:
-    # with open('input2.txt', 'r') as f:
+    # with open('temp2.txt', 'r') as f:
+    with open('input2.txt', 'r') as f:
         data = f.readlines()
 
     _, instructions = parseData(data)
