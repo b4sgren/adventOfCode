@@ -16,12 +16,13 @@ def parseData(data):
     return grid, start_id
 
 def part1():
-    with open('temp.txt', 'r') as f:
+    # with open('temp.txt', 'r') as f:
+    with open('input.txt', 'r') as f:
         data = f.readlines()
 
     grid , start_id = parseData(data)
 
-    num_steps = 6
+    num_steps = 64
     queue = [start_id]  # of of possible current locations
     for i in range(num_steps):
         next_queue = []  # queue of possible next locations
