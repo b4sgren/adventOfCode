@@ -72,7 +72,8 @@ def parseData(data):
 
 
 def part1():
-    with open('temp2.txt', 'r') as f:
+    # with open('temp2.txt', 'r') as f:
+    with open('input.txt', 'r') as f:
         data = f.readlines()
 
     module_map = parseData(data)
