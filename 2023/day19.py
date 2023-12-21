@@ -1,3 +1,6 @@
+from copy import deepcopy as copy
+import numpy as np
+
 class Part:
     def __init__(self, tokens):
         self.x = tokens[0]
@@ -91,16 +94,48 @@ def part1():
 
     print(sum)
 
-def findNumCombosThatPass(instructions, key, lower_bnd, upper_bnd):
-    instruction = instructions[key]
+def findNumCombosThatPass(instructions, key, lb, ub):
+    sum = 0
+    diff = np.array([ub[k] - lb[k] for k in lb.keys()])
+    # Impossible to be here or outright rejected
+    if np.any(diff <= 0) or key == 'R':
+        return 0
 
+    # If accepted
+    if key == 'A':
+        return np.product(diff)
+
+    instruction = instructions[key]
+    print(key)
+    if key == 'px':
+        debug = 1
+
+    lower_bnd = copy(lb)
+    upper_bnd = copy(ub)
     # Iterate over each and calculate upper and lower bounds
     for instr in instruction.instructions:
-        if instr[1] == '<':
-            pass
-        elif instr[1] == '>':
-            pass
+        part_id, operator, threshold, next_instr = instr
+        if operator == '<':
+            orig_ub = upper_bnd[part_id]
+            upper_bnd[part_id] = threshold
+            sum += findNumCombosThatPass(instructions, next_instr, lower_bnd, upper_bnd)
+            upper_bnd[part_id] = orig_ub
+            lower_bnd[part_id] = threshold
+        elif operator == '>':
+            orig_lb = lower_bnd[part_id]
+            lower_bnd[part_id] = threshold+1
+            sum += findNumCombosThatPass(instructions, next_instr, lower_bnd, upper_bnd)
+            lower_bnd[part_id] = orig_lb
+            upper_bnd[part_id] = threshold+1
+
+        # Change the bounds for the next iteration
+        # This is more complicated. Don't switch if its not possible.
+        # Do switch if it is...
         debug = 1
+
+    sum += findNumCombosThatPass(instructions, instruction.default_instr, lower_bnd, upper_bnd)
+
+    return sum
 
 
 # How many combinations of ratings will be accepted
@@ -117,8 +152,10 @@ def part2():
     sum = findNumCombosThatPass(instructions, 'in', lb, ub)
     # Always start with instruction in
 
+    print(sum)
+
 
 if __name__=="__main__":
-    part1()
+    # part1()
 
     part2()
