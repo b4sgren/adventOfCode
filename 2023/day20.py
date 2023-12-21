@@ -9,13 +9,19 @@ class FlipFlopModule:
         if pulse_type == 1:
             return None
         self.state = 1 - self.state  # flip state
-        return self.state  # if on send high pulse, if off send low
+        return self.state  # if on send high pulse, if off send lo    # NEED TO INITIALIZE ALL INPUTS IN CONJUCTION MODULES BEFORE I DO THIS LOOPw
+
+    def addInput(self, sender):
+        pass
 
 class ConjuctionModule:
     def __init__(self, targets):
         # default remember a low pulse
         self.inputs = {}  # sender is key, pulse type is value
         self.targets = targets
+
+    def addInput(self, sender):
+        self.inputs[sender] = 0
 
     def inputPulse(self, sender, pulse_type):
         if sender not in  self.inputs.keys():
@@ -35,6 +41,9 @@ class BroadcasterModule:
     # Outputs the pulse type passed on
     def inputPulse(self, sender, pulse_type):
         return pulse_type
+
+    def addInput(self, sender):
+        pass
 
 def parseData(data):
     src_target_map = {}
@@ -68,6 +77,14 @@ def part1():
 
     module_map = parseData(data)
 
+
+    # NEED TO INITIALIZE ALL INPUTS IN CONJUCTION MODULES BEFORE I DO THIS LOOP
+    for key, module in module_map.items():
+        for target in module.targets:
+            if target in module_map.keys():
+                module_map[target].addInput(key)
+
+    # Test input 2 is off on first pass
     num_pulses = {0:0, 1:0}
     for i in range(1000):
         pulse_queue = []  # tuples of (sender, receiver, pulse)
@@ -77,17 +94,21 @@ def part1():
             pulse_queue.append(('broadcaster', target, pulse))
 
         while len(pulse_queue) > 0:
-            sender, target, pulse = pulse_queue.pop()
-            num_pulses[pulse] += 1
+            sender, target, pulse = pulse_queue.pop(0)
+            # print(sender, pulse, target)
+            num_pulses[pulse] += 1  # increment pulses sent
+
+            # Verify the target actually does something
             if target not in module_map.keys():
                 continue
+
             output_pulse = module_map[target].inputPulse(sender, pulse)
             if output_pulse is None:
                 continue
             for next_target in module_map[target].targets:
                 pulse_queue.append((target, next_target, output_pulse))
 
-    print(num_pulses[0] * num_pulses[1])
+    print(num_pulses[0] * num_pulses[1])  # Each is off by one
 
 
 def part2():
