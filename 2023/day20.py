@@ -111,9 +111,52 @@ def part1():
 
     print(num_pulses[0] * num_pulses[1])  # Each is off by one
 
-
 def part2():
-    pass
+    # with open('temp2.txt', 'r') as f:
+    with open('input.txt', 'r') as f:
+        data = f.readlines()
+
+    module_map = parseData(data)
+
+
+    # NEED TO INITIALIZE ALL INPUTS IN CONJUCTION MODULES BEFORE I DO THIS LOOP
+    for key, module in module_map.items():
+        for target in module.targets:
+            if target in module_map.keys():
+                module_map[target].addInput(key)
+
+    # Test input 2 is off on first pass
+    num_pulses = {0:0, 1:0}
+    counter = 0
+    flag = True
+    while flag:
+        pulse_queue = []  # tuples of (sender, receiver, pulse)
+        pulse = module_map['broadcaster'].inputPulse('button', 0)
+        num_pulses[0] += 1
+        counter += 1
+        for target in module_map['broadcaster'].targets:
+            pulse_queue.append(('broadcaster', target, pulse))
+
+        while len(pulse_queue) > 0:
+            sender, target, pulse = pulse_queue.pop(0)
+            if target == 'rx' and pulse == 0:
+                flag = False
+                break
+            # print(sender, pulse, target)
+            num_pulses[pulse] += 1  # increment pulses sent
+
+            # Verify the target actually does something
+            if target not in module_map.keys():
+                continue
+
+            output_pulse = module_map[target].inputPulse(sender, pulse)
+            if output_pulse is None:
+                continue
+            for next_target in module_map[target].targets:
+                pulse_queue.append((target, next_target, output_pulse))
+
+    print(counter)  # Each is off by one
+
 
 if __name__=="__main__":
     part1()
