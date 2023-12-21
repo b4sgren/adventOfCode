@@ -126,6 +126,7 @@ def part2():
                 module_map[target].addInput(key)
 
     # Test input 2 is off on first pass
+    bh, jf, sh, mz = -1, -1, -1, -1
     num_pulses = {0:0, 1:0}
     counter = 0
     flag = True
@@ -139,9 +140,21 @@ def part2():
 
         while len(pulse_queue) > 0:
             sender, target, pulse = pulse_queue.pop(0)
-            if target == 'rx' and pulse == 0:
+            # if target == 'bh' or target == 'jf' or target == 'sh' or target == 'mz':
+                # debug = 1
+            if sender == 'bh' and bh < 0 and pulse == 1:
+                bh = counter
+            if sender == 'jf' and jf < 0 and pulse == 1:
+                jf = counter
+            if sender == 'sh' and sh < 0 and pulse == 1:
+                sh = counter
+            if sender == 'mz' and mz < 0 and pulse == 1:
+                mz = counter
+
+            if bh > 0 and jf > 0 and sh > 0 and mz > 0:
                 flag = False
                 break
+
             # print(sender, pulse, target)
             num_pulses[pulse] += 1  # increment pulses sent
 
@@ -155,7 +168,9 @@ def part2():
             for next_target in module_map[target].targets:
                 pulse_queue.append((target, next_target, output_pulse))
 
-    print(counter)  # Each is off by one
+    # print(counter)  # Each is off by one
+    print(bh, jf, sh, mz)
+    print(bh * jf * sh * mz)
 
 
 if __name__=="__main__":
