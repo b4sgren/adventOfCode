@@ -61,12 +61,19 @@ def part2():
     grid = [line[1:-1] for line in grid]
     start_id = [start_id[0]-1, start_id[1]-1]
 
+    # I may need to do this computation for a number of starting places
     num_rows = len(grid)
     num_cols = len(grid[0])
     num_steps = 26501365
     queue = [tuple(start_id)]  # of of possible current locations
+    tile_states = set()
     for i in range(num_steps):
         next_queue = []  # queue of possible next locations
+        # Determine if we have reached a steady state
+        if queue in tile_states:
+            break
+        tile_states.add(tuple(queue))
+
         while len(queue) > 0:
             location = queue.pop(0)
             row, col = location
