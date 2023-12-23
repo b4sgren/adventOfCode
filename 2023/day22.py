@@ -1,4 +1,5 @@
 import numpy as np
+from collections import defaultdict
 
 def parseData(data):
     snapshot_locations = []
@@ -83,11 +84,19 @@ def part1():
     snapshot_locations = parseData(data)
     settled_positions, brick_positions = settleBricks(snapshot_locations)
     dependencies = getDependencies(settled_positions, brick_positions)
-    # Get neighbors below
-    # neighbors = getNeighbors(settled_positions)  # return a dict
     # Can remove supporting bricks with more than one
     # Combine lists for bricks in a given row and see if they overlap
-    debug = 1
+    can_remove = {}
+    for i in range(len(dependencies)):
+        can_remove[i+1] = True
+
+    for i in dependencies.keys():
+        if len(dependencies[i]) == 1:
+            can_remove[dependencies[i][0]] = False
+
+    # Need to get bricks with no dependencies
+
+    print(list(can_remove.values()).count(True))
 
 def part2():
     pass
