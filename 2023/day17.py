@@ -63,8 +63,8 @@ def part1():
 
 # Move a minimum of 4 straight and max of 10
 def part2():
-    with open('temp2.txt', 'r') as f:
-    # with open('input2.txt', 'r') as f:
+    # with open('temp2.txt', 'r') as f:
+    with open('input2.txt', 'r') as f:
         data = f.readlines()
 
     # Convert to a grid
