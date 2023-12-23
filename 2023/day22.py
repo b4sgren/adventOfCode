@@ -43,6 +43,7 @@ def settleBricks(snapshot_locations):
         delta_z = z2 - z1 + 1
 
         # find first page where all values between x and y are zero
+        z_counter = 0
         for j in range(max_z-1, -1, -1):
             if np.any(grid[j, y1:y2+1, x1:x2+1] != 0):
                 z_counter = j+1
@@ -101,6 +102,7 @@ def part1():
 
 """
 405 is too low
+408 is too low
 """
 
 def part2():
