@@ -1,6 +1,7 @@
 import numpy as np
 np.set_printoptions(linewidth=200)
 from heapq import heappop, heappush
+from itertools import count
 
 def part1():
     with open('temp2.txt', 'r') as f:
@@ -18,40 +19,47 @@ def part1():
 
     idx = grid[-1].index('.')
     target_idx = (len(grid)-1, idx)
+    counter = count()
 
     # Do a version of DFS. Looking for longest path
     # Do BFS with negative weights
+
+    # ISSUE WITH HEAPPUSH. NOT SORTING CORRECTLY
     queue = []
-    heappush(queue, (0, 0, idx0))
+    heappush(queue, (0, next(counter), 0, idx0))
     while len(queue) > 0:
         idx = heappop(queue)
-        _, r, c = idx
+        _, _, r, c = idx
         dist = distances[r, c]
         visited[r, c] = True
+
+        if dist >= -37:
+            debug = 1
+
+        # Are we at our target
         if r == target_idx[0] and c == target_idx[1]:
             break
 
         next_dist = dist-1
         neighbors = []
         if grid[r][c] == '.':
-            neighbors = [(next_dist, r+1, c), (next_dist, r, c+1), (next_dist, r-1, c), (next_dist, r, c-1)]
+            neighbors = [(next_dist, next(counter), r+1, c), (next_dist, next(counter), r, c+1), (next_dist, next(counter), r-1, c), (next_dist, next(counter), r, c-1)]
         elif grid[r][c] == '>':
-            neighbors = [(next_dist, r, c+1)]
+            neighbors = [(next_dist, next(counter), r, c+1)]
         elif grid[r][c] == '<':
-            neighbors = [(next_dist, r, c-1)]
+            neighbors = [(next_dist, next(counter), r, c-1)]
         elif grid[r][c] == '^':
-            neighbors = [(next_dist, r-1, c)]
+            neighbors = [(next_dist, next(counter), r-1, c)]
         elif grid[r][c] == 'v':
-            neighbors = [(next_dist, r+1, c)]
+            neighbors = [(next_dist, next(counter), r+1, c)]
 
         for neighbor in neighbors:
             # Check if visited
-            _, r, c = neighbor
+            _, _, r, c = neighbor
             if (r, c) in visited.keys() and not visited[(r, c)] and grid[r][c] != '#':
-                heappush(queue, neighbor)
                 if distances[r, c] > next_dist:
                     distances[r, c] = next_dist
-                    queue.append(neighbor)
+                    heappush(queue, neighbor)
 
     print(distances[target_idx[0], target_idx[1]])
 
