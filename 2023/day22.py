@@ -78,7 +78,7 @@ def getDependencies(grid, brick_positions):
     return dependencies
 
 def part1():
-    with open('temp.txt', 'r') as f:
+    with open('input.txt', 'r') as f:
         data = f.readlines()
 
     snapshot_locations = parseData(data)
@@ -97,6 +97,11 @@ def part1():
     # Need to get bricks with no dependencies
 
     print(list(can_remove.values()).count(True))
+
+
+"""
+405 is too low
+"""
 
 def part2():
     pass
