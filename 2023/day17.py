@@ -31,22 +31,17 @@ def part1():
         row = [int(v) for v in temp]
         grid.append(row)
 
-    # add tasks to priority queue
-    for x in range(len(grid)):
-        for y in range(len(grid[0])):
-            for dir in range(4):
-                for consecutive in range(1, 4):
-                    addTask((x, y, dir, consecutive), 1e8)
+
     movement = {0:(0, -1), 1:(1, 0), 2:(0, 1), 3:(-1, 0)}
+    # Add first step to priority queue
     addTask((0, 0, 1, 0), 0)
     cost[(0, 0, 1, 0)] = 0
 
     while True:
         entry = removeTask()
-        _, count, task = entry
+        _, _, task = entry
         x, y, dir, consecutive = task
         distance = cost[task]
-        # print(x, y, distance)
         # Check if we reached our target
         if x == len(grid[0])-1 and y == len(grid)-1:
             print(distance)
