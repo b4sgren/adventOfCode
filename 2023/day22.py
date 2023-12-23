@@ -23,6 +23,7 @@ def settleBricks(snapshot_locations):
         max_z += delta_z
 
     # Note: Np prints (page, row, col) or (z, y, x)
+    brick_positions = {}
     grid = np.zeros((max_z, max_y, max_x))
     z_counter = 0
     edge1, edge2 = snapshot_locations[0]
@@ -30,6 +31,7 @@ def settleBricks(snapshot_locations):
     x2, y2, z2 = edge2
     delta_z = z2 - z1 + 1
     grid[z_counter:z_counter+delta_z, y1:y2+1, x1:x2+1] = 1
+    brick_positions[1] = [(x1, y1, z_counter), (x2, y2, z_counter+delta_z)]
     z_counter += delta_z
 
     for i in range(1, len(snapshot_locations)):
@@ -46,17 +48,42 @@ def settleBricks(snapshot_locations):
                 break
 
         grid[z_counter:z_counter+delta_z, y1:y2+1, x1:x2+1] = i+1
+        brick_positions[i+1] = [(x1, y1, z_counter), (x2, y2, z_counter+delta_z-1)]
 
-    return grid
+    return grid, brick_positions
 
+def getDependencies(grid, brick_positions):
+    dependencies = {1:[]}
+
+    for i in range(2, len(brick_positions)+1):
+        edge1, edge2 = brick_positions[i]
+        x1, y1, z1 = edge1
+        x2, y2, z2 = edge2
+
+        # No dependencies if on bottom level
+        if z1 == 0:
+            dependencies[i] = []
+            continue
+        temp = grid[z1-1, y1:y2+1, x1:x2+1]
+        if np.any(temp != 0):
+            vals = list(np.unique(temp))
+            if 0 in vals:
+                idx = vals.index(0)
+                vals.pop(idx)
+            dependencies[i] = list(vals)
+        else:
+            dependencies[i] = []
+
+    return dependencies
 
 def part1():
     with open('temp.txt', 'r') as f:
         data = f.readlines()
 
     snapshot_locations = parseData(data)
-    settled_positions = settleBricks(snapshot_locations)
-    ## Get neighbors below
+    settled_positions, brick_positions = settleBricks(snapshot_locations)
+    dependencies = getDependencies(settled_positions, brick_positions)
+    # Get neighbors below
     # neighbors = getNeighbors(settled_positions)  # return a dict
     # Can remove supporting bricks with more than one
     # Combine lists for bricks in a given row and see if they overlap
