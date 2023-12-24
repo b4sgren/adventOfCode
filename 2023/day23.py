@@ -3,6 +3,8 @@ np.set_printoptions(linewidth=200)
 from heapq import heappop, heappush
 from itertools import count
 
+
+# Try recursive version of DFS. Compare every path to the end
 def part1():
     with open('temp2.txt', 'r') as f:
         data = f.readlines()
@@ -21,9 +23,6 @@ def part1():
     target_idx = (len(grid)-1, idx)
     counter = count()
 
-    # Do a version of DFS. Looking for longest path
-    # Do BFS with negative weights
-
     # ISSUE WITH HEAPPUSH. NOT SORTING CORRECTLY
     queue = []
     heappush(queue, (0, next(counter), 0, idx0))
@@ -33,14 +32,11 @@ def part1():
         dist = distances[r, c]
         visited[r, c] = True
 
-        if dist >= -37:
-            debug = 1
-
         # Are we at our target
         if r == target_idx[0] and c == target_idx[1]:
             break
 
-        next_dist = dist-1
+        next_dist = dist+1
         neighbors = []
         if grid[r][c] == '.':
             neighbors = [(next_dist, next(counter), r+1, c), (next_dist, next(counter), r, c+1), (next_dist, next(counter), r-1, c), (next_dist, next(counter), r, c-1)]
@@ -56,8 +52,16 @@ def part1():
         for neighbor in neighbors:
             # Check if visited
             _, _, r, c = neighbor
+            if (r, c) in visited.keys() and grid[r][c] != '#':
+                if visited[(r, c)]:
+                    pass
+                else:
+                    if distances[r, c] < next_dist:
+                        distances[r, c] = next_dist
+                        heappush(queue, neighbor)
+
             if (r, c) in visited.keys() and not visited[(r, c)] and grid[r][c] != '#':
-                if distances[r, c] > next_dist:
+                if distances[r, c] < next_dist:
                     distances[r, c] = next_dist
                     heappush(queue, neighbor)
 
