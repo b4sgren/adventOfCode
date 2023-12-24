@@ -44,15 +44,15 @@ def findIntersectionsXY(positions, velocities):
 
 
 def part1():
-    with open('temp.txt', 'r') as f:
+    with open('input.txt', 'r') as f:
         data = f.readlines()
 
     positions, velocities = parseData(data)
 
     intersection_pts = findIntersectionsXY(positions, velocities)
 
-    bnds_x = [7, 27]
-    bnds_y = [7, 27]
+    bnds_x = [200000000000000, 400000000000000]
+    bnds_y = [200000000000000, 400000000000000]
     counter = 0
     for pt in intersection_pts:
         if bnds_x[0] <= pt[0] <= bnds_x[1] and bnds_y[0] <= pt[1] <= bnds_y[1]:
