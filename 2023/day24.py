@@ -61,7 +61,10 @@ def part1():
     print(counter)
 
 def part2():
-    pass
+    with open('input.txt', 'r') as f:
+        data = f.readlines()
+
+    positions, velocities = parseData(data)
 
 if __name__=="__main__":
     part1()
