@@ -17,7 +17,7 @@ void parseData(const std::string &file, std::vector<std::string> &data) {
 
 void part1(const std::vector<std::string> &data) {
     int sum{0};
-    std::regex regexPattern("mul\(\d{1,3},\d{1,3}\)");
+    std::regex regexPattern("mul\\(\\d{1,3},\\d{1,3}\\)");
 
     for (std::string line : data) {
         auto it = std::sregex_iterator(line.begin(), line.end(), regexPattern);
@@ -25,17 +25,17 @@ void part1(const std::vector<std::string> &data) {
         for (; it != end; ++it) {
             std::string str = it->str();
 
-            std::cout << str << std::endl;
+            size_t commaId = str.find(',');
+            const size_t firstDigitId = 4;
+            const size_t lastDigitId = str.size() - 2;
 
-            // size_t commaId = str.find(',');
-            // const size_t firstDigitId = 5;
-            // const size_t lastDigitId = str.size() - 1;
-
-            // int num1 = std::stoi(str.substr(firstDigitId, commaId - firstDigitId));
-            // int num2 = std::stoi(str.substr(commaId + 1, lastDigitId - commaId));
-            // sum += num1 * num2;
+            int num1 = std::stoi(str.substr(firstDigitId, commaId - firstDigitId));
+            int num2 = std::stoi(str.substr(commaId + 1, lastDigitId - commaId));
+            sum += num1 * num2;
         }
     }
+
+    std::cout << "Part1: " << sum << std::endl;
 }
 
 int main(int argc, char *argv[]) {
