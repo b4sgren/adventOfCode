@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
     parseData(input_file, data);
 
     part1(data);  // 161
-    part2(data);  // 74210088 is to high
+    part2(data);  // Note: Need to make input all one line haha
 
     return 0;
 }
