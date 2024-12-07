@@ -52,7 +52,7 @@ bool generateCombinations(int64_t result, const std::vector<int64_t> &values, si
 }
 
 bool canCombine(int64_t result, std::vector<int64_t> values) {
-    int sum{values[0]};
+    int64_t sum{values[0]};
     std::set<std::vector<char>> failedCombs{};
     std::vector<char> current{};
     return generateCombinations(result, values, 0, current, sum, failedCombs);
@@ -60,7 +60,7 @@ bool canCombine(int64_t result, std::vector<int64_t> values) {
 
 // Need dynamic programming
 void part1(const std::vector<int64_t> &results, const std::vector<std::vector<int64_t>> &vals) {
-    int resultsSum{0};
+    int64_t resultsSum{0};
 
     for (int i{0}; i != results.size(); ++i) {
         if (canCombine(results[i], vals[i])) {
