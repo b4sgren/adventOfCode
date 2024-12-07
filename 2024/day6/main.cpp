@@ -101,38 +101,13 @@ void part1(std::vector<std::string> data) {
 }
 
 // spcial case where it is just a line??
-bool isLoopPossible(std::vector<std::string> data, int direction, size_t rowId, size_t colId, std::pair<size_t, size_t> &obsPos) {
+bool findLoop(std::vector<std::string> data, size_t rowId, size_t colId, int direction, std::vector<std::tuple<size_t, size_t, int>> vertices) {
     bool onMap = true;
-    int origDirection = direction;
-    size_t target;
-    int targetDirection;  // Need to be facing the right way also
-    if (origDirection == 0 || origDirection == 2) {
-        target = colId;  // targeting original column
-        targetDirection = origDirection - 1;
-    } else {
-        target = rowId;  // targeting original row
-        targetDirection = origDirection - 1;
-    }
-    if (targetDirection < 0) targetDirection += 4;
-
     while (onMap) {
         onMap = getNextSpot(data, direction, rowId, colId);
-
-        if (origDirection == 0 || origDirection == 2) {
-            if (colId == target && direction == targetDirection) {
-                // TODO: Set the obstacle position. Call getNextSpot
-                getNextSpot(data, direction, rowId, colId);
-                obsPos = std::make_pair(rowId, colId);
-                return true;
-            }
-        } else {
-            if (rowId == target && direction == targetDirection) {
-                // TODO: Set the obstacle position. Call getNextSpot
-                getNextSpot(data, direction, rowId, colId);
-                obsPos = std::make_pair(rowId, colId);
-                return true;
-            }
-        }
+        if (std::find(vertices.begin(), vertices.end(), std::make_tuple(rowId, colId, direction)) != vertices.end())  // Found a loop
+            return true;
+        vertices.emplace_back(rowId, colId, direction);
 
         // displayMap(data);
     }
@@ -143,10 +118,10 @@ bool isLoopPossible(std::vector<std::string> data, int direction, size_t rowId, 
 void part2(std::vector<std::string> data) {
     int numPositions{0};
 
-    // Travel along the path
-    // For each obstacle he encounters: need previous direction
-    // Determine if a loop is possible (i.e. he will get to the same column on a different row)
-    // If so increment the counter and continue
+    // Before I take a step change the block in front of me to be an obstacle
+    // Solve the puzzle to see if a loop is found. Need to maintain position and direction
+    // If so mark the puzzle
+    // Check starting position at the very end
 
     // FInd starting position
     size_t rowId, colId;
@@ -158,8 +133,8 @@ void part2(std::vector<std::string> data) {
         }
     }
 
-    std::vector<std::pair<size_t, size_t>> newObstacles{};  // DO I need direction also?
-    int direction = 0;                                      // 1 is North, 2 is East, 3 is South, 4 is West
+    int direction = 0;  // 1 is North, 2 is East, 3 is South, 4 is West
+    std::vector<std::tuple<size_t, size_t, int>> vertices{{rowId, colId, direction}};
     bool onMap = true;
     while (onMap) {
         size_t nextRowId = rowId;
@@ -167,30 +142,27 @@ void part2(std::vector<std::string> data) {
         int nextDirection = direction;
         onMap = getNextSpot(data, nextDirection, nextRowId, nextColId);
 
-        std::pair<size_t, size_t> obsPos = std::make_pair(0, 0);
-        if (nextDirection != direction) {
-            if (isLoopPossible(data, direction, rowId, colId, obsPos)) {
-                if (std::find(newObstacles.begin(), newObstacles.end(), obsPos) == newObstacles.end()) {
-                    ++numPositions;
-                    newObstacles.emplace_back(obsPos);
-                }
-            }
-            // Check if  aloop is possible
-            // i.e. do I get back to the current row/col depending on direction
-            // if yex, then place an obstacle on the next square
+        if (!onMap) break;
+
+        char orig_char = data[nextRowId][nextColId];
+        data[nextRowId][nextColId] = '#';
+        if (findLoop(data, rowId, colId, direction, vertices)) {
+            ++numPositions;
         }
+        data[nextRowId][nextColId] = '#';
 
         rowId = nextRowId;
         colId = nextColId;
         direction = nextDirection;
 
+        // For visualization
         if (onMap) {
             // if (data[rowId][colId] == '.') {
             //     numPositions += 1;
             // }
             data[rowId][colId] = 'X';
         }
-        displayMap(data);
+        // displayMap(data);
     }
 
     std::cout << "Part 2: " << numPositions << std::endl;
@@ -203,12 +175,12 @@ int main(int argc, char *argv[]) {
     // }
 
     // std::string input_file = std::string(argv[1]);
-    std::string input_file = "../input.txt";
+    std::string input_file = "../test_input.txt";
     std::vector<std::string> data{};
     parseData(input_file, data);
 
     part1(data);  // 4977
-    // part2(data);
+    part2(data);  // 1908 is high, 828 is low
 
     return 0;
 }
