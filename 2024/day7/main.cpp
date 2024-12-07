@@ -58,7 +58,6 @@ bool canCombine(int64_t result, std::vector<int64_t> values) {
     return generateCombinations(result, values, 0, current, sum, failedCombs);
 }
 
-// Need dynamic programming
 void part1(const std::vector<int64_t> &results, const std::vector<std::vector<int64_t>> &vals) {
     int64_t resultsSum{0};
 
@@ -69,6 +68,54 @@ void part1(const std::vector<int64_t> &results, const std::vector<std::vector<in
     }
 
     std::cout << "Part 1: " << resultsSum << std::endl;
+}
+
+bool generateCombinations2(int64_t result, const std::vector<int64_t> &values, size_t size, std::vector<char> current, int64_t sum, std::set<std::vector<char>> &failedCombs) {
+    if (size == values.size() - 1 && sum == result) {
+        return true;
+    } else if (size == values.size() - 1 && sum != result) {
+        failedCombs.insert(current);
+        return false;
+    } else if (sum > result) {
+        failedCombs.insert(current);
+        return false;
+    }
+
+    current.push_back('+');
+    if (failedCombs.find(current) == failedCombs.end()) {  // If this combination hasn't failed already
+        if (generateCombinations2(result, values, size + 1, current, sum + values[size + 1], failedCombs)) return true;
+    }
+    current.back() = '*';
+    if (failedCombs.find(current) == failedCombs.end()) {  // If this combination hasn't failed already
+        if (generateCombinations2(result, values, size + 1, current, sum * values[size + 1], failedCombs)) return true;
+    }
+    current.back() = '|';
+    std::string temp = std::to_string(sum) + std::to_string(values[size + 1]);
+    int64_t newSum = std::atol(temp.c_str());
+    if (failedCombs.find(current) == failedCombs.end()) {  // If this combination hasn't failed already
+        if (generateCombinations2(result, values, size + 1, current, newSum, failedCombs)) return true;
+    }
+
+    return false;
+}
+
+bool canCombine2(int64_t result, std::vector<int64_t> values) {
+    int64_t sum{values[0]};
+    std::set<std::vector<char>> failedCombs{};
+    std::vector<char> current{};
+    return generateCombinations2(result, values, 0, current, sum, failedCombs);
+}
+
+void part2(const std::vector<int64_t> &results, const std::vector<std::vector<int64_t>> &vals) {
+    int64_t resultsSum{0};
+
+    for (int i{0}; i != results.size(); ++i) {
+        if (canCombine2(results[i], vals[i])) {
+            resultsSum += results[i];
+        }
+    }
+
+    std::cout << "Part 2: " << resultsSum << std::endl;
 }
 
 int main(int argc, char *argv[]) {
@@ -83,7 +130,8 @@ int main(int argc, char *argv[]) {
     std::vector<std::vector<int64_t>> values{};
     parseData(input_file, results, values);
 
-    part1(results, values);  // 47725752 is to low
+    part1(results, values);
+    part2(results, values);
 
     return 0;
 }
