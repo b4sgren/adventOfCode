@@ -4,6 +4,7 @@
 #include <regex>
 #include <sstream>
 #include <string>
+#include <tuple>
 #include <vector>
 
 void parseData(const std::string &file, std::vector<std::string> &data) {
@@ -99,6 +100,102 @@ void part1(std::vector<std::string> data) {
     std::cout << "Part 1: " << numPositions << std::endl;
 }
 
+// spcial case where it is just a line??
+bool isLoopPossible(std::vector<std::string> data, int direction, size_t rowId, size_t colId, std::pair<size_t, size_t> &obsPos) {
+    bool onMap = true;
+    int origDirection = direction;
+    size_t target;
+    int targetDirection;  // Need to be facing the right way also
+    if (origDirection == 0 || origDirection == 2) {
+        target = colId;  // targeting original column
+        targetDirection = origDirection - 1;
+    } else {
+        target = rowId;  // targeting original row
+        targetDirection = origDirection - 1;
+    }
+    if (targetDirection < 0) targetDirection += 4;
+
+    while (onMap) {
+        onMap = getNextSpot(data, direction, rowId, colId);
+
+        if (origDirection == 0 || origDirection == 2) {
+            if (colId == target && direction == targetDirection) {
+                // TODO: Set the obstacle position. Call getNextSpot
+                getNextSpot(data, direction, rowId, colId);
+                obsPos = std::make_pair(rowId, colId);
+                return true;
+            }
+        } else {
+            if (rowId == target && direction == targetDirection) {
+                // TODO: Set the obstacle position. Call getNextSpot
+                getNextSpot(data, direction, rowId, colId);
+                obsPos = std::make_pair(rowId, colId);
+                return true;
+            }
+        }
+
+        // displayMap(data);
+    }
+
+    return false;
+}
+
+void part2(std::vector<std::string> data) {
+    int numPositions{0};
+
+    // Travel along the path
+    // For each obstacle he encounters: need previous direction
+    // Determine if a loop is possible (i.e. he will get to the same column on a different row)
+    // If so increment the counter and continue
+
+    // FInd starting position
+    size_t rowId, colId;
+    for (int i{0}; i != data.size(); ++i) {
+        size_t idx = data[i].find('^');
+        if (idx != std::string::npos) {
+            rowId = i;
+            colId = idx;
+        }
+    }
+
+    std::vector<std::pair<size_t, size_t>> newObstacles{};  // DO I need direction also?
+    int direction = 0;                                      // 1 is North, 2 is East, 3 is South, 4 is West
+    bool onMap = true;
+    while (onMap) {
+        size_t nextRowId = rowId;
+        size_t nextColId = colId;
+        int nextDirection = direction;
+        onMap = getNextSpot(data, nextDirection, nextRowId, nextColId);
+
+        std::pair<size_t, size_t> obsPos = std::make_pair(0, 0);
+        if (nextDirection != direction) {
+            if (isLoopPossible(data, direction, rowId, colId, obsPos)) {
+                if (std::find(newObstacles.begin(), newObstacles.end(), obsPos) == newObstacles.end()) {
+                    ++numPositions;
+                    newObstacles.emplace_back(obsPos);
+                }
+            }
+            // Check if  aloop is possible
+            // i.e. do I get back to the current row/col depending on direction
+            // if yex, then place an obstacle on the next square
+        }
+
+        rowId = nextRowId;
+        colId = nextColId;
+        direction = nextDirection;
+
+        if (onMap) {
+            // if (data[rowId][colId] == '.') {
+            //     numPositions += 1;
+            // }
+            data[rowId][colId] = 'X';
+        }
+        displayMap(data);
+    }
+
+    std::cout << "Part 2: " << numPositions << std::endl;
+}
+
 int main(int argc, char *argv[]) {
     // if (argc != 2) {
     //     std::cout << "Input the path to the input file" << std::endl;
@@ -110,7 +207,8 @@ int main(int argc, char *argv[]) {
     std::vector<std::string> data{};
     parseData(input_file, data);
 
-    part1(data);
+    part1(data);  // 4977
+    // part2(data);
 
     return 0;
 }
