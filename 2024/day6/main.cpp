@@ -105,10 +105,14 @@ bool findLoop(std::vector<std::string> data, size_t rowId, size_t colId, int dir
     bool onMap = true;
     while (onMap) {
         onMap = getNextSpot(data, direction, rowId, colId);
+
         if (std::find(vertices.begin(), vertices.end(), std::make_tuple(rowId, colId, direction)) != vertices.end())  // Found a loop
             return true;
         vertices.emplace_back(rowId, colId, direction);
 
+        if (onMap && data[rowId][colId] == '.') {
+            data[rowId][colId] = 'X';
+        }
         // displayMap(data);
     }
 
@@ -132,24 +136,33 @@ void part2(std::vector<std::string> data) {
             colId = idx;
         }
     }
+    size_t r0 = rowId;
+    size_t c0 = rowId;
+    int d0 = 0;
+    data[rowId][colId] = 'X';
 
     int direction = 0;  // 1 is North, 2 is East, 3 is South, 4 is West
-    std::vector<std::tuple<size_t, size_t, int>> vertices{{rowId, colId, direction}};
+    std::vector<std::tuple<size_t, size_t, int>> vertices{};
     bool onMap = true;
     while (onMap) {
         size_t nextRowId = rowId;
         size_t nextColId = colId;
         int nextDirection = direction;
+        vertices.emplace_back(nextRowId, nextColId, nextDirection);
         onMap = getNextSpot(data, nextDirection, nextRowId, nextColId);
 
         if (!onMap) break;
 
-        char orig_char = data[nextRowId][nextColId];
-        data[nextRowId][nextColId] = '#';
-        if (findLoop(data, rowId, colId, direction, vertices)) {
-            ++numPositions;
+        // Make next spot an obstacle
+        if (data[nextRowId][nextColId] != 'X') {
+            char orig_char = data[nextRowId][nextColId];
+            data[nextRowId][nextColId] = '#';
+            // Check if there is a loop
+            if ((nextRowId != r0 || nextColId != c0) && findLoop(data, rowId, colId, direction, vertices)) {
+                ++numPositions;
+            }
+            data[nextRowId][nextColId] = orig_char;
         }
-        data[nextRowId][nextColId] = '#';
 
         rowId = nextRowId;
         colId = nextColId;
@@ -175,7 +188,7 @@ int main(int argc, char *argv[]) {
     // }
 
     // std::string input_file = std::string(argv[1]);
-    std::string input_file = "../test_input.txt";
+    std::string input_file = "../input.txt";
     std::vector<std::string> data{};
     parseData(input_file, data);
 
