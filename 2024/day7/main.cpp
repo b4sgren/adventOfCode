@@ -119,19 +119,19 @@ void part2(const std::vector<int64_t> &results, const std::vector<std::vector<in
 }
 
 int main(int argc, char *argv[]) {
-    // if (argc != 2) {
-    //     std::cout << "Input the path to the input file" << std::endl;
-    //     return 0;
-    // }
+    if (argc != 2) {
+        std::cout << "Input the path to the input file" << std::endl;
+        return 0;
+    }
 
-    // std::string input_file = std::string(argv[1]);
-    std::string input_file = "../input.txt";
+    std::string input_file = std::string(argv[1]);
+    // std::string input_file = "../input.txt";
     std::vector<int64_t> results{};
     std::vector<std::vector<int64_t>> values{};
     parseData(input_file, results, values);
 
     part1(results, values);
-    part2(results, values);
+    // part2(results, values);
 
     return 0;
 }
