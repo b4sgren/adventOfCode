@@ -68,7 +68,71 @@ void part1(const std::vector<std::string> &data) {
         }
     }
 
-    std::cout << "Part 1: " << anitNodeLocations.size();
+    std::cout << "Part 1: " << anitNodeLocations.size() << std::endl;
+}
+
+void calcAntiNodeLocations2(std::pair<int, int> ant1, std::pair<int, int> ant2, int maxR, int maxC, std::set<std::pair<int, int>> &locs) {
+    // In this case since any element in line is an antinode I may need to normalize the denominator
+    int rowSlope = static_cast<int>(ant2.first) - static_cast<int>(ant1.first);
+    int colSlope = static_cast<int>(ant2.second) - static_cast<int>(ant1.second);
+
+    // Each antenna is an antinode now
+    locs.insert(ant1);
+    locs.insert(ant2);
+
+    int mul = 1;
+    bool flag1{true}, flag2{true};
+    while (flag1 || flag2) {
+        int locR1 = ant2.first + mul * rowSlope;
+        int locC1 = ant2.second + mul * colSlope;
+        // Check if in bounds and double distance
+        if (locR1 >= 0 && locC1 >= 0 && locR1 < maxR && locC1 < maxC) {
+            locs.insert({locR1, locC1});
+        } else {
+            flag1 = false;
+        }
+
+        int locR2 = ant1.first - mul * rowSlope;
+        int locC2 = ant1.second - mul * colSlope;
+        if (locR2 >= 0 && locC2 >= 0 && locR2 < maxR && locC2 < maxC) {
+            locs.insert({locR2, locC2});
+        } else {
+            flag2 = false;
+        }
+
+        ++mul;
+    }
+}
+
+void part2(const std::vector<std::string> &data) {
+    std::map<std::string, std::vector<std::pair<int, int>>> antennas{};  // Different types of antennas
+
+    std::regex regexPattern("[^.#]");  // Anything except . and #
+    for (int i{0}; i != data.size(); ++i) {
+        auto it = std::sregex_iterator(data[i].begin(), data[i].end(), regexPattern);
+        auto end = std::sregex_iterator();
+        for (; it != end; ++it) {
+            const std::string str = it->str();
+            const int col = static_cast<int>(it->position());
+            if (antennas.count(str) == 0)
+                antennas.insert({str, {}});
+            antennas[str].emplace_back(i, col);
+        }
+    }
+
+    // Identify antinode locations. Must be less than the following and greater than 0
+    int maxRows = data.size();
+    int maxCols = data[0].size();
+    std::set<std::pair<int, int>> anitNodeLocations{};
+    for (auto pair : antennas) {
+        for (int i{0}; i != pair.second.size() - 1; ++i) {
+            for (int j{i + 1}; j != pair.second.size(); ++j) {
+                calcAntiNodeLocations2(pair.second[i], pair.second[j], maxRows, maxCols, anitNodeLocations);
+            }
+        }
+    }
+
+    std::cout << "Part 2: " << anitNodeLocations.size() << std::endl;
 }
 
 int main(int argc, char *argv[]) {
@@ -83,6 +147,7 @@ int main(int argc, char *argv[]) {
     parseData(input_file, data);
 
     part1(data);
+    part2(data);
 
     return 0;
 }
