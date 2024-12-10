@@ -20,16 +20,16 @@ void parseData(const std::string &file, std::string &data) {
 
 void part1(std::string data) {
     int fileId{0};
-    std::string fileString{""};
 
+    std::vector<std::string> fileString{};
     for (int i{0}; i != data.size(); ++i) {
         int val = data[i] - '0';
 
         for (int j{0}; j != val; ++j) {
             if (i % 2 == 0) {
-                fileString += std::to_string(fileId);
+                fileString.push_back(std::to_string(fileId));
             } else {  // Free space
-                fileString += '.';
+                fileString.push_back(".");
             }
         }
 
@@ -38,25 +38,26 @@ void part1(std::string data) {
     }
 
     // Sort string so free space is at the end
-    int front{0}, back{fileString.size() - 1};
+    size_t front{0}, back{fileString.size() - 1};
+    // Front and back no longer point to the correct spot...
     while (front < back) {
-        if (fileString[front] == '.') {
+        if (fileString[front] == ".") {
             std::swap(fileString[front], fileString[back]);
-            --back;
-            while (fileString[back] == '.')
+            while (fileString[back] == ".")
                 --back;
         }
         ++front;
     }
 
-    // Compute checksum
-    size_t checksum{0};
-    for (size_t i{0}; i != fileString.size(); ++i) {
-        if (fileString[i] == '.')
-            break;
-        int val = fileString[i] - '0';
+    for (std::string str : fileString)
+        std::cout << str;
+    std::cout << std::endl;
 
-        checksum += i * static_cast<size_t>(val);
+    // Compute checksum
+    uint64_t checksum{0};
+    for (uint64_t i{0}; i != fileString.size(); ++i) {
+        if (fileString[i] == ".") continue;
+        checksum += i * std::atoll(fileString[i].c_str());
     }
 
     std::cout << "Part 1: " << checksum << std::endl;
@@ -73,7 +74,8 @@ int main(int argc, char *argv[]) {
     std::string data{};
     parseData(input_file, data);
 
-    part1(data);  // 89403351449 is to low
+    part1(data);  // 89403351449 is to low, 2921528924398 is to low
+    6258319840548
 
-    return 0;
+        return 0;
 }
