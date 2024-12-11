@@ -73,6 +73,55 @@ void part1(std::vector<std::vector<int>> data) {
     std::cout << "Part 1: " << sum << std::endl;
 }
 
+// Don't use a visited to keep track of all paths
+int findNumTrails2(const std::vector<std::vector<int>> &data, size_t row, size_t col) {
+    int numTrails{0};
+
+    std::stack<std::pair<size_t, size_t>> stack{};
+    stack.push(std::make_pair(row, col));
+    // do DFS
+    while (!stack.empty()) {
+        auto pos = stack.top();
+        stack.pop();
+
+        const int val = data[pos.first][pos.second];
+        if (val == 9) {
+            ++numTrails;
+        }
+
+        if (pos.first > 0 && data[pos.first - 1][pos.second] == val + 1) {
+            stack.push(std::make_pair(pos.first - 1, pos.second));
+        }
+        if (pos.first < data.size() - 1 && data[pos.first + 1][pos.second] == val + 1) {
+            stack.push(std::make_pair(pos.first + 1, pos.second));
+        }
+        if (pos.second > 0 && data[pos.first][pos.second - 1] == val + 1) {
+            stack.push(std::make_pair(pos.first, pos.second - 1));
+        }
+        if (pos.second < data[pos.first].size() && data[pos.first][pos.second + 1] == val + 1) {
+            stack.push(std::make_pair(pos.first, pos.second + 1));
+        }
+    }
+
+    return numTrails;
+}
+
+void part2(std::vector<std::vector<int>> data) {
+    int sum{0};
+    for (size_t i{0}; i != data.size(); ++i) {
+        int numZeros = std::count(data[i].begin(), data[i].end(), 0);
+        auto it = data[i].begin();
+        for (int j{0}; j != numZeros; ++j) {
+            it = std::find(it, data[i].end(), 0);
+            size_t col = std::distance(data[i].begin(), it);
+            ++it;  // To not find the same one twice
+            sum += findNumTrails2(data, i, col);
+        }
+    }
+
+    std::cout << "Part 2: " << sum << std::endl;
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         std::cout << "Input the path to the input file" << std::endl;
@@ -84,7 +133,7 @@ int main(int argc, char *argv[]) {
     parseData(input_file, data);
 
     part1(data);
-    // part2(data);
+    part2(data);
 
     return 0;
 }
