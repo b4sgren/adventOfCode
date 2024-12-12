@@ -43,6 +43,70 @@ void part1(std::vector<uint64_t> data) {
     std::cout << "Part 1: " << data.size() << std::endl;
 }
 
+uint64_t getVector(uint64_t value, int counter) {
+    std::map<uint64_t, std::vector<uint64_t>> baseMappings{
+        {0, std::vector<uint64_t>{1}},
+        {1, std::vector<uint64_t>{2, 0, 2, 4}},
+        {2, std::vector<uint64_t>{4, 0, 4, 8}},
+        {3, std::vector<uint64_t>{6, 0, 7, 2}},
+        {4, std::vector<uint64_t>{8, 0, 9, 6}},
+        {5, std::vector<uint64_t>{2, 0, 4, 8, 2, 8, 8, 0}},
+        {6, std::vector<uint64_t>{2, 4, 5, 7, 9, 4, 5, 6}},
+        {7, std::vector<uint64_t>{2, 8, 6, 7, 6, 0, 3, 2}},
+        {8, std::vector<uint64_t>{3, 2, 7, 7, 2, 6, 0, 8}},
+        {9, std::vector<uint64_t>{3, 6, 8, 6, 9, 1, 8, 4}},
+    };
+    std::map<uint64_t, int> numSteps{{0, 1}, {1, 3}, {2, 3}, {3, 3}, {4, 3}, {5, 5}, {6, 5}, {7, 5}, {8, 5}, {9, 5}};
+    int counterThresh = 25;
+
+    if (counter > counterThresh) {
+        ++counter;
+    }
+
+    if (counter == counterThresh)
+        return 1;
+
+    std::string num = std::to_string(value);
+    if (num.size() == 1) {  // 1 digit
+        if (counter + numSteps[value] <= counterThresh) {
+            counter += numSteps[value];
+            auto vec = baseMappings[value];
+            // Recursively call each element in vec, concatenate to temp and return temp
+            uint64_t cnt{0};
+            for (uint64_t val : vec) {
+                cnt += getVector(val, counter);
+            }
+            return cnt;
+        } else {
+            ++counter;
+            if (value == 0) {
+                return getVector(value + 1, counter);
+            } else if (num.size() % 2 == 0) {
+                uint64_t val1 = std::stoull(num.substr(0, num.size() / 2));
+                uint64_t val2 = std::stoull(num.substr(num.size() / 2, num.size() / 2));
+                return getVector(val1, counter) + getVector(val2, counter);
+
+            } else {
+                return getVector(value * 2024, counter);
+            }
+        }
+    } else if (num.size() % 2 == 0) {
+        ++counter;
+        std::vector<uint64_t> temp{std::stoull(num.substr(0, num.size() / 2)),
+                                   std::stoull(num.substr(num.size() / 2, num.size() / 2))};
+        uint64_t cnt1 = getVector(temp[0], counter);
+        uint64_t cnt2 = getVector(temp[1], counter);
+        return cnt1 + cnt2;
+    } else {
+        ++counter;
+        if (counter == counterThresh) {
+            return 1;
+        } else {
+            return getVector(value * 2024, counter);
+        }
+    }
+}
+
 // Need some way to speed it up
 void part2(std::vector<uint64_t> data) {
     // May need a table of partial mappings
@@ -61,17 +125,16 @@ void part2(std::vector<uint64_t> data) {
     std::map<uint64_t, int> numSteps{{0, 1}, {1, 3}, {2, 3}, {3, 3}, {4, 3}, {5, 5}, {6, 5}, {7, 5}, {8, 5}, {9, 5}};
     std::vector<int> stepCnt(data.size(), 0);
 
-    std::vector<uint64_t> newData{};
+    uint64_t sum{0};
     for (int i{0}; i != data.size(); ++i) {
         int stepCounter{0};
         std::vector<uint64_t> temp{data[i]};
-        while (stepCounter != 75) {
-            // The code for this section
-            // Probably easiest with recursion
-        }
+        // The code for this section
+        // Probably easiest with recursion
+        sum += getVector(data[i], stepCounter);
     }
 
-    std::cout << "Part 2: " << data.size() << std::endl;
+    std::cout << "Part 2: " << sum << std::endl;
 }
 
 int main(int argc, char *argv[]) {
