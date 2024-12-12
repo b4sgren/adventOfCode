@@ -77,7 +77,6 @@ int fillArea(const std::vector<std::string> &data, size_t row, size_t col, char 
         }
     }
 
-    // return numVisited;
     return numVisited * perimeter;
 }
 
@@ -180,14 +179,7 @@ void part1(std::vector<std::string> data) {
         if (plant == '.') break;
 
         // BFS to find area
-        int plot_cost = fillArea(data, row, col, plant, visited);
-
-        // Edge tracing to find the perimeter. Start at a point and try turning left
-        // TODO: NEED TO FIND INTERIOR HOLES!!
-        // int perimeter = findPerimeter(data, row, col, plant);
-
-        // cost += area * perimeter;
-        cost += plot_cost;
+        cost += fillArea(data, row, col, plant, visited);
     }
 
     std::cout << "Part 1: " << cost << std::endl;
