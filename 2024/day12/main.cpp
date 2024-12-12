@@ -185,6 +185,72 @@ void part1(std::vector<std::string> data) {
     std::cout << "Part 1: " << cost << std::endl;
 }
 
+int fillArea2(const std::vector<std::string> &data, size_t row, size_t col, char plant, std::vector<std::vector<bool>> &visited) {
+    int numVisited{0};
+    int perimeter{0};
+
+    std::stack<std::pair<size_t, size_t>> stack{};
+    stack.push(std::make_pair(row, col));
+    // BFS
+    while (!stack.empty()) {
+        auto pos = stack.top();
+        stack.pop();
+        const size_t r = pos.first;
+        const size_t c = pos.second;
+
+        if (!visited[pos.first][pos.second]) {
+            ++numVisited;
+            // Find sides that need to be fenced
+            if (r == 0 || r == data.size() - 1)
+                ++perimeter;
+            if (c == 0 || c == data[0].size() - 1)
+                ++perimeter;
+            if (r < data.size() - 1 && data[r + 1][c] != plant)
+                ++perimeter;
+            if (r > 0 && data[r - 1][c] != plant)
+                ++perimeter;
+            if (c < data[0].size() - 1 && data[r][c + 1] != plant)
+                ++perimeter;
+            if (c > 0 && data[r][c - 1] != plant)
+                ++perimeter;
+        }
+        visited[pos.first][pos.second] = true;
+
+        // Check neighbors and push onto stack
+        if (r > 0 && data[r - 1][c] == plant && !visited[r - 1][c]) {
+            stack.push(std::make_pair(r - 1, c));
+        }
+        if (r < data.size() - 1 && data[r + 1][c] == plant && !visited[r + 1][c]) {
+            stack.push(std::make_pair(r + 1, c));
+        }
+        if (c > 0 && data[r][c - 1] == plant && !visited[r][c - 1]) {
+            stack.push(std::make_pair(r, c - 1));
+        }
+        if (c < data[r].size() - 1 && data[r][c + 1] == plant && !visited[r][c + 1]) {
+            stack.push(std::make_pair(r, c + 1));
+        }
+    }
+
+    return numVisited * perimeter;
+}
+
+void part2(std::vector<std::string> data) {
+    int cost{0};
+    std::vector<std::vector<bool>> visited(data.size(), std::vector<bool>(data[0].size(), false));
+
+    size_t row{0}, col{0};
+    while (row < data.size()) {
+        // Identify a new region
+        char plant = findRegion(data, visited, row, col);
+        if (plant == '.') break;
+
+        // BFS to find area
+        cost += fillArea2(data, row, col, plant, visited);
+    }
+
+    std::cout << "Part 1: " << cost << std::endl;
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         std::cout << "Input the path to the input file" << std::endl;
