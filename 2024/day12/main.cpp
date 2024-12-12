@@ -33,6 +33,7 @@ char findRegion(const std::vector<std::string> &data, const std::vector<std::vec
 
 int fillArea(const std::vector<std::string> &data, size_t row, size_t col, char plant, std::vector<std::vector<bool>> &visited) {
     int numVisited{0};
+    int perimeter{0};
 
     std::stack<std::pair<size_t, size_t>> stack{};
     stack.push(std::make_pair(row, col));
@@ -40,11 +41,26 @@ int fillArea(const std::vector<std::string> &data, size_t row, size_t col, char 
     while (!stack.empty()) {
         auto pos = stack.top();
         stack.pop();
-        if (!visited[pos.first][pos.second]) ++numVisited;
-        visited[pos.first][pos.second] = true;
-
         const size_t r = pos.first;
         const size_t c = pos.second;
+
+        if (!visited[pos.first][pos.second]) {
+            ++numVisited;
+            // Find sides that need to be fenced
+            if (r == 0 || r == data.size() - 1)
+                ++perimeter;
+            if (c == 0 || c == data[0].size() - 1)
+                ++perimeter;
+            if (r < data.size() - 1 && data[r + 1][c] != plant)
+                ++perimeter;
+            if (r > 0 && data[r - 1][c] != plant)
+                ++perimeter;
+            if (c < data[0].size() - 1 && data[r][c + 1] != plant)
+                ++perimeter;
+            if (c > 0 && data[r][c - 1] != plant)
+                ++perimeter;
+        }
+        visited[pos.first][pos.second] = true;
 
         // Check neighbors and push onto stack
         if (r > 0 && data[r - 1][c] == plant && !visited[r - 1][c]) {
@@ -61,7 +77,8 @@ int fillArea(const std::vector<std::string> &data, size_t row, size_t col, char 
         }
     }
 
-    return numVisited;
+    // return numVisited;
+    return numVisited * perimeter;
 }
 
 int findPerimeter(const std::vector<std::string> &data, size_t row, size_t col, char plant) {
@@ -163,13 +180,14 @@ void part1(std::vector<std::string> data) {
         if (plant == '.') break;
 
         // BFS to find area
-        int area = fillArea(data, row, col, plant, visited);
+        int plot_cost = fillArea(data, row, col, plant, visited);
 
         // Edge tracing to find the perimeter. Start at a point and try turning left
         // TODO: NEED TO FIND INTERIOR HOLES!!
-        int perimeter = findPerimeter(data, row, col, plant);
+        // int perimeter = findPerimeter(data, row, col, plant);
 
-        cost += area * perimeter;
+        // cost += area * perimeter;
+        cost += plot_cost;
     }
 
     std::cout << "Part 1: " << cost << std::endl;
