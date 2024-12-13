@@ -12,6 +12,9 @@
 int counterThresh = 75;
 int globalCnt = 0;
 
+// Store function calls here
+std::map<std::pair<uint64_t, uint64_t>, uint64_t> mapping{};
+
 void parseData(const std::string &file, std::vector<uint64_t> &data) {
     std::ifstream fin{file};
     if (!fin.is_open()) return;
@@ -55,80 +58,56 @@ void part1(std::vector<uint64_t> data) {
 }
 
 // Counter = 10, stop on the 5th 8
-uint64_t getVector(uint64_t value, int counter) {
-    std::map<uint64_t, std::vector<uint64_t>> baseMappings{
-        {0, std::vector<uint64_t>{1}},
-        {1, std::vector<uint64_t>{2, 0, 2, 4}},
-        {2, std::vector<uint64_t>{4, 0, 4, 8}},
-        {3, std::vector<uint64_t>{6, 0, 7, 2}},
-        {4, std::vector<uint64_t>{8, 0, 9, 6}},
-        {5, std::vector<uint64_t>{2, 0, 4, 8, 2, 8, 8, 0}},
-        {6, std::vector<uint64_t>{2, 4, 5, 7, 9, 4, 5, 6}},
-        {7, std::vector<uint64_t>{2, 8, 6, 7, 6, 0, 3, 2}},
-        // {8, std::vector<uint64_t>{3, 2, 7, 7, 2, 6, 0, 8}},
-        {8, std::vector<uint64_t>{32, 77, 26, 8}},
-        {9, std::vector<uint64_t>{3, 6, 8, 6, 9, 1, 8, 4}},
-    };
-    std::map<uint64_t, int> numSteps{{0, 1}, {1, 3}, {2, 3}, {3, 3}, {4, 3}, {5, 5}, {6, 5}, {7, 5}, {8, 4}, {9, 5}};
-
-    if (counter == 10 && value == 8096) {
-        // if (counter == 10 && globalCnt > 40) {
-        ++counter;
-        --counter;
-    }
-
+uint64_t getVector(uint64_t value, uint64_t counter) {
     if (counter == counterThresh) {
         // std::cout << value << " ";
-        return 1;
+        return 1;  // Just 1 number here
     }
 
+    ++counter;
     std::string num = std::to_string(value);
-    if (num.size() == 1) {  // 1 digit
-        if (counter + numSteps[value] <= counterThresh) {
-            counter += numSteps[value];
-            auto vec = baseMappings[value];
-            // Recursively call each element in vec, concatenate to temp and return temp
-            uint64_t cnt{0};
-            for (uint64_t val : vec) {
-                cnt += getVector(val, counter);
-            }
-            return cnt;
+    if (value == 0) {
+        std::pair<uint64_t, uint64_t> pair{value + 1, counter};
+        if (mapping.count(pair) != 0) {
+            return mapping[pair];
         } else {
-            ++counter;
-            if (value == 0) {
-                return getVector(value + 1, counter);
-            } else if (num.size() % 2 == 0) {
-                if (num == "08") {
-                    ++counter;
-                    --counter;
-                }
-                uint64_t val1 = std::stoull(num.substr(0, num.size() / 2));
-                uint64_t val2 = std::stoull(num.substr(num.size() / 2, num.size() / 2));
-                if (val1 != 0)
-                    return getVector(val1, counter) + getVector(val2, counter);
-                else
-                    return getVector(val2, counter);
-
-            } else {
-                return getVector(value * 2024, counter);
-            }
+            uint64_t cnt = getVector(value + 1, counter);
+            mapping.insert({{value + 1, counter}, cnt});
+            return cnt;
         }
     } else if (num.size() % 2 == 0) {
-        ++counter;
-        if (num == "08") {
-            ++counter;
-            --counter;
+        uint64_t val1 = std::stoull(num.substr(0, num.size() / 2));
+        uint64_t val2 = std::stoull(num.substr(num.size() / 2, num.size() / 2));
+        std::pair<uint64_t, uint64_t> pair1{val1, counter};
+        std::pair<uint64_t, uint64_t> pair2{val2, counter};
+
+        uint64_t cnt1{0};
+        if (val1 != 0) {
+            if (mapping.count(pair1) != 0) {
+                cnt1 = mapping[pair1];
+            } else {
+                cnt1 = getVector(val1, counter);
+                mapping.insert({{val1, counter}, cnt1});
+            }
         }
 
-        std::vector<uint64_t> temp{std::stoull(num.substr(0, num.size() / 2)),
-                                   std::stoull(num.substr(num.size() / 2, num.size() / 2))};
-        uint64_t cnt1 = 0;
-        if (temp[0] != 0) cnt1 = getVector(temp[0], counter);
-        uint64_t cnt2 = getVector(temp[1], counter);
+        uint64_t cnt2{0};
+        if (mapping.count(pair2) != 0) {
+            cnt2 = mapping[pair2];
+        } else {
+            cnt2 = getVector(val2, counter);
+            mapping.insert({{val2, counter}, cnt2});
+        }
         return cnt1 + cnt2;
     } else {
-        ++counter;
-        return getVector(value * 2024, counter);
+        std::pair<uint64_t, uint64_t> pair{value * 2024, counter};
+        if (mapping.count(pair) != 0) {
+            return mapping[pair];
+        } else {
+            uint64_t cnt = getVector(value * 2024, counter);
+            mapping.insert({{value * 2024, counter}, cnt});
+            return cnt;
+        }
     }
 }
 
@@ -137,7 +116,7 @@ void part2(std::vector<uint64_t> data) {
     // May need a table of partial mappings
     uint64_t sum{0};
     for (int i{0}; i != data.size(); ++i) {
-        int stepCounter{0};
+        uint64_t stepCounter{0};
         std::vector<uint64_t> temp{data[i]};
         // The code for this section
         // Probably easiest with recursion
@@ -158,7 +137,7 @@ int main(int argc, char *argv[]) {
     parseData(input_file, data);
 
     // part1(data);
-    part2(data);
+    part2(data);  // 1066883794  is to low
 
     return 0;
 }
