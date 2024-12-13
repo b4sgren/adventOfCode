@@ -9,6 +9,9 @@
 #include <tuple>
 #include <vector>
 
+int counterThresh = 75;
+int globalCnt = 0;
+
 void parseData(const std::string &file, std::vector<uint64_t> &data) {
     std::ifstream fin{file};
     if (!fin.is_open()) return;
@@ -22,7 +25,7 @@ void parseData(const std::string &file, std::vector<uint64_t> &data) {
 }
 
 void part1(std::vector<uint64_t> data) {
-    for (size_t j{0}; j != 25; ++j) {
+    for (size_t j{0}; j != counterThresh; ++j) {
         std::vector<uint64_t> new_data = data;
         size_t numInserts{0};
         for (size_t i{0}; i != data.size(); ++i) {
@@ -51,6 +54,7 @@ void part1(std::vector<uint64_t> data) {
     std::cout << "\nPart 1: " << data.size() << std::endl;
 }
 
+// Counter = 10, stop on the 5th 8
 uint64_t getVector(uint64_t value, int counter) {
     std::map<uint64_t, std::vector<uint64_t>> baseMappings{
         {0, std::vector<uint64_t>{1}},
@@ -62,13 +66,13 @@ uint64_t getVector(uint64_t value, int counter) {
         {6, std::vector<uint64_t>{2, 4, 5, 7, 9, 4, 5, 6}},
         {7, std::vector<uint64_t>{2, 8, 6, 7, 6, 0, 3, 2}},
         // {8, std::vector<uint64_t>{3, 2, 7, 7, 2, 6, 0, 8}},
-        {8, std::vector<uint64_t>{3, 2, 7, 7, 2, 6, 8}},
+        {8, std::vector<uint64_t>{32, 77, 26, 8}},
         {9, std::vector<uint64_t>{3, 6, 8, 6, 9, 1, 8, 4}},
     };
-    std::map<uint64_t, int> numSteps{{0, 1}, {1, 3}, {2, 3}, {3, 3}, {4, 3}, {5, 5}, {6, 5}, {7, 5}, {8, 5}, {9, 5}};
-    int counterThresh = 25;
+    std::map<uint64_t, int> numSteps{{0, 1}, {1, 3}, {2, 3}, {3, 3}, {4, 3}, {5, 5}, {6, 5}, {7, 5}, {8, 4}, {9, 5}};
 
-    if (counter == counterThresh - 2 && value == 26) {
+    if (counter == 10 && value == 8096) {
+        // if (counter == 10 && globalCnt > 40) {
         ++counter;
         --counter;
     }
@@ -153,7 +157,7 @@ int main(int argc, char *argv[]) {
     std::vector<uint64_t> data;
     parseData(input_file, data);
 
-    part1(data);
+    // part1(data);
     part2(data);
 
     return 0;
