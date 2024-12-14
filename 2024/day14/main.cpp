@@ -9,11 +9,11 @@
 #include <tuple>
 #include <vector>
 
-constexpr int MAX_GRID_ROWS = 7;
-constexpr int MAX_GRID_COLS = 11;
+// constexpr int MAX_GRID_ROWS = 7;
+// constexpr int MAX_GRID_COLS = 11;
 
-// constexpr int MAX_GRID_ROWS = 103;
-// constexpr int MAX_GRID_COLS = 101;
+constexpr int MAX_GRID_ROWS = 103;
+constexpr int MAX_GRID_COLS = 101;
 
 const int MAX_TIME = 100;
 
@@ -68,7 +68,7 @@ void parseData(const std::string &file, std::vector<Robot> &robots) {
         int vx = std::stoi(velStr.substr(2, idx - 2));
         int vy = std::stoi(velStr.substr(idx + 1, velStr.size() - idx - 1));
 
-        robots.emplace_back(x, y, vx, vy);
+        robots.emplace_back(y, x, vy, vx);
     }
 }
 
@@ -78,10 +78,12 @@ void part1(std::vector<Robot> robots) {
     int temp{0};
     int midR = MAX_GRID_ROWS / 2;
     int midC = MAX_GRID_COLS / 2;
+    std::vector<std::pair<int, int>> positions{};
     for (Robot &robot : robots) {
         for (int i{0}; i != MAX_TIME; ++i)
             robot.move(1);
         auto pos = robot.getPosition();
+        positions.push_back(pos);
         const int r{pos.first};
         const int c{pos.second};
 
