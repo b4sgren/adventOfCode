@@ -16,6 +16,7 @@ constexpr int MAX_GRID_ROWS = 103;
 constexpr int MAX_GRID_COLS = 101;
 
 const int MAX_TIME = 100;
+std::ofstream fout{"tree.txt"};
 
 class Robot {
    public:
@@ -100,7 +101,109 @@ void part1(std::vector<Robot> robots) {
             ++quad4;
     }
 
-    std::cout << "Part 1: " << quad1 * quad2 * quad3 * quad4;
+    std::cout << "Part 1: " << quad1 * quad2 * quad3 * quad4 << std::endl;
+}
+
+bool formsLoop(std::vector<std::pair<int, int>> positions) {
+    std::vector<std::vector<int>> grid(MAX_GRID_ROWS, std::vector<int>(MAX_GRID_COLS, -1));
+    for (auto pos : positions) {
+        grid[pos.first][pos.second] = 1;
+    }
+
+    for (std::vector<int> vec : grid) {
+        for (int v : vec) {
+            if (v < 0) {
+                fout << ".";
+            } else {
+                fout << "x";
+            }
+        }
+        fout << "\n";
+    }
+    fout << "\n=================================================\n";
+    // // return false;
+
+    std::vector<std::vector<bool>>
+        visited(MAX_GRID_ROWS, std::vector<bool>(MAX_GRID_COLS, false));
+    std::stack<std::pair<int, int>> stack{};
+    std::stack<std::pair<int, int>> parent{};
+    stack.push(positions[0]);
+    parent.push(positions[0]);
+    int numVisited{0};
+    while (!stack.empty()) {
+        auto pos = stack.top();
+        stack.pop();
+        auto prev = parent.top();
+        parent.pop();
+        // If visited then skip
+        if (visited[pos.first][pos.second])
+            continue;
+
+        visited[pos.first][pos.second] = true;
+        ++numVisited;
+
+        // Check surrounding tiles
+        const int r{pos.first}, c{pos.second};
+        if (r > 0 && grid[r - 1][c] == 1 && !visited[r - 1][c]) {
+            stack.push(std::make_pair(r - 1, c));
+            parent.push(pos);
+        } else if (r > 0 && grid[r - 1][c] == 1 && visited[r - 1][c] && prev != std::make_pair(r - 1, c)) {
+            if (numVisited == positions.size())
+                return true;
+            else
+                return false;
+        }
+
+        if (r < grid.size() - 1 && grid[r + 1][c] == 1 && !visited[r + 1][c]) {
+            stack.push(std::make_pair(r + 1, c));
+            parent.push(pos);
+        } else if (r < grid.size() - 1 && grid[r + 1][c] == 1 && visited[r + 1][c] && prev != std::make_pair(r + 1, c)) {
+            if (numVisited == positions.size())
+                return true;
+            else
+                return false;
+        }
+
+        if (c > 0 && grid[r][c - 1] == 1 && !visited[r][c - 1]) {
+            stack.push(std::make_pair(r, c - 1));
+            parent.push(pos);
+        } else if (c > 0 && grid[r][c - 1] == 1 && visited[r][c - 1] && prev != std::make_pair(r, c - 1)) {
+            if (numVisited == positions.size())
+                return true;
+            else
+                return false;
+        }
+
+        if (c < grid[r].size() - 1 && grid[r][c + 1] == 1 && !visited[r][c + 1]) {
+            stack.push(std::make_pair(r, c + 1));
+            parent.push(pos);
+        } else if (c < grid[r].size() - 1 && grid[r][c + 1] == 1 && visited[r][c + 1] && prev != std::make_pair(r, c + 1)) {
+            if (numVisited == positions.size())
+                return true;
+            else
+                return false;
+        }
+    }
+    return false;
+}
+
+void part2(std::vector<Robot> robots) {
+    int counter{0};
+    // while (true) {
+    for (int i{0}; i != 20000; ++i) {
+        fout << counter << "\n";
+        ++counter;
+        std::vector<std::pair<int, int>> positions{};
+        for (Robot &robot : robots) {
+            robot.move(1);
+            positions.push_back(robot.getPosition());
+        }
+
+        if (formsLoop(positions))
+            break;
+    }
+
+    std::cout << "Part 2: " << counter << std::endl;
 }
 
 int main(int argc, char *argv[]) {
@@ -113,7 +216,8 @@ int main(int argc, char *argv[]) {
     std::vector<Robot> robots{};
     parseData(input_file, robots);
 
-    part1(robots);  // 226935000 is to low
+    part1(robots);
+    part2(robots);  // 653 is too low
 
     return 0;
 }
