@@ -34,7 +34,7 @@ void part1(std::string data) {
         }
 
         // Increment even if this field in 0 in data??
-        if (i % 2 == 0) ++fileId;
+        if (i % 2 == 0 && val > 0) ++fileId;
     }
 
     // Sort string so free space is at the end
@@ -93,6 +93,7 @@ void part2(std::string data) {
     backR = backL;
     while (fileString[backL] == fileString[backR])
         --backL;
+    ++backL;
     int64_t frontL{0};
     while (fileString[frontL] != ".")
         ++frontL;
@@ -103,22 +104,24 @@ void part2(std::string data) {
         while (fileString[backL] == fileString[backR]) {
             --backL;
         }
-        ++backL;  // Needed?
+        ++backL;
 
         while (frontR < backL && backR - backL > frontR - frontL - 1) {
+            // Look for a new set of .
             while (fileString[frontR] != ".")
                 ++frontR;
             frontL = frontR;
             while (fileString[frontL] == fileString[frontR])
                 ++frontR;
-            // --frontR;
         }
 
         if (frontR < backL) {  // Switch stuff
             const size_t size = backR - backL + 1;
             for (size_t i{0}; i != size; ++i) {
+                std::cout << fileString[backL + i] << " ";
                 std::swap(fileString[frontL + i], fileString[backL + i]);
             }
+            std::cout << std::endl;
             frontL = 0;
             frontR = 0;
             --backL;
