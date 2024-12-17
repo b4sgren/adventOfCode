@@ -30,15 +30,17 @@ void part1(std::vector<std::string> map) {
     }
 
     // Now look for the shortest path
-    std::vector<std::vector<int>> costs(map.size(), std::vector<int>(map[0].size(), 10000000));
-    costs[row][col] = 0;
+    std::map<std::vector<size_t>, int> costs{};
+    for (size_t i{0}; i != map.size(); ++i)
+        for (size_t j{0}; j != map[i].size(); ++j)
+            for (size_t k{0}; k != 4; ++k)
+                costs.insert({std::vector<size_t>{i, j, k}, 100000000});
+
+    costs[std::vector<size_t>{row, col, 1}] = 0;
     size_t cost{0};
-    size_t dir{0};
+    size_t dir{1};
     std::priority_queue<std::vector<size_t>, std::vector<std::vector<size_t>>, std::greater<std::vector<size_t>>> minHeap;
     minHeap.push({cost, row, col, dir});
-    minHeap.push({cost, row, col, 1});
-    minHeap.push({cost, row, col, 2});
-    minHeap.push({cost, row, col, 3});
     while (map[row][col] != 'E') {
         auto vertex = minHeap.top();
         minHeap.pop();
@@ -46,10 +48,15 @@ void part1(std::vector<std::string> map) {
         row = vertex[1];
         col = vertex[2];
         dir = vertex[3];
+        std::vector<size_t> key{row, col, dir};
 
-        if (cost > costs[row][col]) {  // Don't keep looking if cost is greater
+        if (cost > costs[key]) {  // Don't keep looking if cost is greater
             continue;
         }
+        if (map[row][col] == 'E') {
+            break;
+        }
+        costs[key] = cost;
 
         // map[row][col] = 'X';
         // std::cout << row << " " << col << " " << dir << " " << cost << std::endl;
@@ -73,16 +80,22 @@ void part1(std::vector<std::string> map) {
                 break;
         }
 
+        // SLIGHT ISSUE HERE. LIMIT THINGS I"VE ADDED TO QUEUE BEFORE
         size_t nextR{row + rowDir}, nextC{col + colDir};
+        std::vector<size_t> nextKey{nextR, nextC, dir};
         if (map[nextR][nextC] != '#') {
-            minHeap.push({cost + 1, nextR, nextC, dir});
-        } else {
-            // Push turning left and right
-            size_t nextDir = (dir + 1) % 4;
-            minHeap.push({cost + 1000, row, col, nextDir});
-            nextDir = dir == 0 ? 3 : dir - 1;
-            minHeap.push({cost + 1000, row, col, nextDir});
+            if (cost + 1 < costs[nextKey])
+                minHeap.push({cost + 1, nextR, nextC, dir});
         }
+        // Push turning left and right
+        size_t nextDir = (dir + 1) % 4;
+        key[2] = nextDir;
+        if (cost + 1000 < costs[key])
+            minHeap.push({cost + 1000, row, col, nextDir});
+        nextDir = dir == 0 ? 3 : dir - 1;
+        key[2] = nextDir;
+        if (cost + 1000 < costs[key])
+            minHeap.push({cost + 1000, row, col, nextDir});
     }
 
     std::cout << "Part 1: " << cost << std::endl;
