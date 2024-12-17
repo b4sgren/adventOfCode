@@ -117,6 +117,67 @@ void part1(const std::vector<int64_t> &data) {
     std::cout << "Part 1: " << output << std::endl;
 }
 
+void part2(const std::vector<int64_t> &data) {
+    std::string temp_output{""};
+    for (int64_t i{0}; i < data.size(); i += 2) {
+        if (i + 1 >= data.size()) break;
+        const int64_t instruction = data[i];
+        const int64_t operand = data[i + 1];
+
+        switch (instruction) {
+            case 0: {
+                const int64_t num = RegA;
+                const int64_t den = pow(2, getCombo(operand));
+                RegA = num / den;
+                break;
+            }
+            case 1: {
+                RegB = RegB ^ operand;
+                break;
+            }
+            case 2: {
+                RegB = getCombo(operand) % 8;
+                break;
+            }
+            case 3: {
+                if (RegA != 0) {
+                    i = operand - 2;
+                }
+                break;
+            }
+            case 4: {
+                RegB = RegB ^ RegC;
+                break;
+            }
+            case 5: {
+                const int64_t val = getCombo(operand) % 8;
+                temp_output += std::to_string(val);
+                break;
+            }
+            case 6: {
+                const int64_t num = RegA;
+                const int64_t den = pow(2, getCombo(operand));
+                RegB = num / den;
+                break;
+            }
+            case 7: {
+                const int64_t num = RegA;
+                const int64_t den = pow(2, getCombo(operand));
+                RegC = num / den;
+                break;
+            }
+        }
+    }
+
+    std::string output{""};
+    for (char c : temp_output) {
+        output += c;
+        output += ",";
+    }
+
+    std::cout << "Part 2: " << output << std::endl;
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         std::cout << "Input the path to the input file" << std::endl;
