@@ -118,64 +118,101 @@ void part1(const std::vector<int64_t> &data) {
 }
 
 void part2(const std::vector<int64_t> &data) {
-    std::string temp_output{""};
-    for (int64_t i{0}; i < data.size(); i += 2) {
-        if (i + 1 >= data.size()) break;
-        const int64_t instruction = data[i];
-        const int64_t operand = data[i + 1];
+    int64_t positiveChange = 100000;
+    int64_t negativeChange = -50000;
+    int64_t lastChange = 0;
+    RegA = 0;
+    std::vector<int64_t> outputVec{};
+    std::string output{""};
+    while (outputVec != data) {
+        const int64_t origRegA = RegA;
+        outputVec.clear();
+        output = "";  // Reset output
+        for (int64_t i{0}; i < data.size(); i += 2) {
+            if (i + 1 >= data.size()) break;
+            const int64_t instruction = data[i];
+            const int64_t operand = data[i + 1];
 
-        switch (instruction) {
-            case 0: {
-                const int64_t num = RegA;
-                const int64_t den = pow(2, getCombo(operand));
-                RegA = num / den;
-                break;
-            }
-            case 1: {
-                RegB = RegB ^ operand;
-                break;
-            }
-            case 2: {
-                RegB = getCombo(operand) % 8;
-                break;
-            }
-            case 3: {
-                if (RegA != 0) {
-                    i = operand - 2;
+            switch (instruction) {
+                case 0: {
+                    const int64_t num = RegA;
+                    const int64_t den = pow(2, getCombo(operand));
+                    RegA = num / den;
+                    break;
                 }
-                break;
+                case 1: {
+                    RegB = RegB ^ operand;
+                    break;
+                }
+                case 2: {
+                    RegB = getCombo(operand) % 8;
+                    break;
+                }
+                case 3: {
+                    if (RegA != 0) {
+                        i = operand - 2;
+                    }
+                    break;
+                }
+                case 4: {
+                    RegB = RegB ^ RegC;
+                    break;
+                }
+                case 5: {
+                    const int64_t val = getCombo(operand) % 8;
+                    output += std::to_string(val);
+                    break;
+                }
+                case 6: {
+                    const int64_t num = RegA;
+                    const int64_t den = pow(2, getCombo(operand));
+                    RegB = num / den;
+                    break;
+                }
+                case 7: {
+                    const int64_t num = RegA;
+                    const int64_t den = pow(2, getCombo(operand));
+                    RegC = num / den;
+                    break;
+                }
             }
-            case 4: {
-                RegB = RegB ^ RegC;
-                break;
+        }
+
+        for (char c : output) {
+            outputVec.push_back(static_cast<int64_t>(c - '0'));
+        }
+
+        // Print output Vec
+        for (int v : outputVec)
+            std::cout << v << " ";
+        std::cout << std::endl;
+
+        if (outputVec.size() < data.size()) {
+            RegA = origRegA + positiveChange;
+            lastChange = 1;
+        } else if (outputVec.size() > data.size()) {
+            RegA = origRegA + negativeChange;
+            if (lastChange == 1) {
+                positiveChange = positiveChange / 10;
+                negativeChange = negativeChange / 10;
+                if (negativeChange == 0) negativeChange = -1;
             }
-            case 5: {
-                const int64_t val = getCombo(operand) % 8;
-                temp_output += std::to_string(val);
-                break;
+            lastChange = -1;
+        } else if (outputVec < data) {
+            RegA = origRegA + positiveChange;
+            lastChange = 1;
+        } else if (outputVec > data) {
+            RegA = origRegA + negativeChange;
+            if (lastChange == 1) {
+                positiveChange = positiveChange / 10;
+                negativeChange = negativeChange / 10;
+                if (negativeChange == 0) negativeChange = -1;
             }
-            case 6: {
-                const int64_t num = RegA;
-                const int64_t den = pow(2, getCombo(operand));
-                RegB = num / den;
-                break;
-            }
-            case 7: {
-                const int64_t num = RegA;
-                const int64_t den = pow(2, getCombo(operand));
-                RegC = num / den;
-                break;
-            }
+            lastChange = -1;
         }
     }
 
-    std::string output{""};
-    for (char c : temp_output) {
-        output += c;
-        output += ",";
-    }
-
-    std::cout << "Part 2: " << output << std::endl;
+    std::cout << "Part 2: " << RegA << std::endl;
 }
 
 int main(int argc, char *argv[]) {
@@ -189,6 +226,7 @@ int main(int argc, char *argv[]) {
     parseData(input_file, data);
 
     part1(data);
+    part2(data);
 
     return 0;
 }
