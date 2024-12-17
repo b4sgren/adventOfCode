@@ -120,7 +120,10 @@ void part2(std::vector<std::string> map) {
     size_t dir{1};
     std::priority_queue<std::vector<size_t>, std::vector<std::vector<size_t>>, std::greater<std::vector<size_t>>> minHeap;
     minHeap.push({cost, row, col, dir});
-    while (map[row][col] != 'E') {
+    std::map<std::vector<size_t>, std::set<std::vector<size_t>>> parentNodes{};
+    parentNodes.insert({std::vector<size_t>{cost, row, col, dir}, {}});
+    // while (map[row][col] != 'E') {
+    while (!minHeap.empty()) {
         auto vertex = minHeap.top();
         minHeap.pop();
         cost = vertex[0];
@@ -162,21 +165,43 @@ void part2(std::vector<std::string> map) {
         size_t nextR{row + rowDir}, nextC{col + colDir};
         std::vector<size_t> nextKey{nextR, nextC, dir};
         if (map[nextR][nextC] != '#') {
-            if (cost + 1 < costs[nextKey])
-                minHeap.push({cost + 1, nextR, nextC, dir});
+            if (cost + 1 <= costs[nextKey]) {
+                std::vector<size_t> vec{cost + 1, nextR, nextC, dir};
+                minHeap.push(vec);
+                parentNodes[vec].insert(std::vector<size_t>{cost, row, col, dir});
+            }
         }
         // Push turning left and right
         size_t nextDir = (dir + 1) % 4;
         key[2] = nextDir;
-        if (cost + 1000 < costs[key])
-            minHeap.push({cost + 1000, row, col, nextDir});
+        if (cost + 1000 <= costs[key]) {
+            std::vector<size_t> vec{cost + 1000, row, col, nextDir};
+            minHeap.push(vec);
+            parentNodes[vec].insert(std::vector<size_t>{cost, row, col, dir});
+        }
         nextDir = dir == 0 ? 3 : dir - 1;
         key[2] = nextDir;
-        if (cost + 1000 < costs[key])
-            minHeap.push({cost + 1000, row, col, nextDir});
+        if (cost + 1000 <= costs[key]) {
+            std::vector<size_t> vec{cost + 1000, row, col, nextDir};
+            minHeap.push(vec);
+            parentNodes[vec].insert(std::vector<size_t>{cost, row, col, dir});
+        }
     }
 
-    std::cout << "Part 2: " << cost << std::endl;
+    // May need to check reaching the end from multiple directions
+    // Find the unique nodes in all paths and put them in a set
+    std::set<std::pair<size_t, size_t>> nodes{};
+    std::queue<std::vector<size_t>> queue{};
+    queue.push(std::vector<size_t>{cost, row, col, dir});
+    while (!queue.empty()) {
+        std::vector<size_t> vec = queue.front();
+        queue.pop();
+        nodes.insert({vec[1], vec[2]});
+        for (std::vector<size_t> v : parentNodes[vec])
+            queue.push(v);
+    }
+
+    std::cout << "Part 2: " << nodes.size() << std::endl;
 }
 
 int main(int argc, char *argv[]) {
@@ -190,6 +215,7 @@ int main(int argc, char *argv[]) {
     parseData(input_file, data);
 
     part1(data);
+    part2(data);
 
     return 0;
 }
