@@ -134,105 +134,46 @@ int fillArea2(const std::vector<std::string> &data, size_t row, size_t col, char
 }
 
 int findPerimeter(const std::vector<std::string> &data, char plant, const std::set<std::pair<size_t, size_t>> &idInArea) {
-    // Verify that I'm on an edge
-
-    std::set<std::pair<size_t, size_t>> visited{};
-    int perimeter{0};
+    size_t maxR{data.size() - 1}, maxC{data[0].size() - 1};
+    int numCorners{0};
     for (auto pair : idInArea) {
-        // Don't do twice
-        if (visited.count(pair) != 0) continue;
-        visited.insert(pair);
-        size_t row{pair.first}, col{pair.second};
+        const size_t r{pair.first}, c{pair.second};
 
-        // Determine if we are on an edge of a region
-        bool onEdge = false;
-        // On the edge of the garden
-        if (row == 0 || row == data.size() - 1 || col == 0 || col == data[0].size() - 1) onEdge = true;
-        // Check to make sure we are not surrounded by the same plant
-        if (row > 0 && data[row - 1][col] != plant) onEdge = true;
-        if (row < data.size() - 1 && data[row + 1][col] != plant) onEdge = true;
-        if (col > 0 && data[row][col - 1] != plant) onEdge = true;
-        if (col < data.size() - 1 && data[row][col + 1] != plant) onEdge = true;
+        // Special case if on an edge
 
-        if (!onEdge) continue;  // No an edge tile
+        std::vector<int> diffs(4, 0);
+        if (data[r + 1][c] != plant) diffs[0] = 1;
+        if (data[r - 1][c] != plant) diffs[1] = 1;
+        if (data[r][c + 1] != plant) diffs[2] = 1;
+        if (data[r][c - 1] != plant) diffs[3] = 1;
 
-        // Which direction am I facing: 0: North, 1:East, 2:South, 3:West
-        int direction{0};
-        // Cases where we are on the edge
-        if (row == 0)
-            direction = 1;
-        else if (row == data.size() - 1)
-            direction = 3;
-        else if (col == 0)
-            direction = 0;
-        else if (col == data.size() - 1)
-            direction = 2;
-        else if (row > 0 && data[row - 1][col] != plant)
-            direction = 1;
-        else if (row < data.size() - 1 && data[row + 1][col] != plant)
-            direction = 3;
-        else if (col > 0 && data[row][col - 1] != plant)
-            direction = 0;
-        else if (col < data[0].size() - 1 && data[row][col + 1] != plant)
-            direction = 2;
+        // if (data[r + 1][c] != plant) ++numDiff;
+        // if (data[r - 1][c] != plant) ++numDiff;
+        // if (data[r][c + 1] != plant) ++numDiff;
+        // if (data[r][c - 1] != plant) ++numDiff;
+        // if (data[r + 1][c - 1] != plant) ++numDiff;
+        // if (data[r - 1][c - 1] != plant) ++numDiff;
+        // if (data[r + 1][c + 1] != plant) ++numDiff;
+        // if (data[r + 1][c - 1] != plant) ++numDiff;
 
-        const size_t r0{row};
-        const size_t c0{col};
-        const int d0{direction};
+        if (diffs == std::vector<int>{1, 1, 1, 1}) {
+            numCorners += 3;
+        } else if (diffs == std::vector<int>{1, 1, 1, 0} || diffs == std::vector<int>{1, 1, 0, 1} || diffs == std::vector<int>{1, 0, 1, 1} || diffs == std::vector<int>{0, 1, 1, 1}) {
+            numCorners += 3;
+        }
 
-        // Do wall following: Default to try and turn left, then go straight, then turn right
-        // Edge case of an inside corner __|
-        do {
-            visited.insert(std::make_pair(row, col));
-            if (direction == 0) {
-                if (row == 0 || data[row - 1][col] != plant) {
-                    ++perimeter;
-                    ++direction;
-                } else
-                    --row;
-            } else if (direction == 1) {
-                if (col == data[row].size() - 1 || data[row][col + 1] != plant) {
-                    ++direction;
-                    ++perimeter;
-                } else
-                    ++col;
-            } else if (direction == 2) {
-                if (row == data.size() - 1 || data[row + 1][col] != plant) {
-                    ++direction;
-                    ++perimeter;
-                } else
-                    ++row;
-            } else if (direction == 3) {
-                if (col == 0 || data[row][col - 1] != plant) {
-                    direction = 0;
-                    ++perimeter;
-                } else
-                    --col;
-            }
-
-            // Check for special cases
-            if (direction == 0 && col > 0 && data[row][col - 1] == plant) {
-                --col;
-                direction = 3;
-                ++perimeter;
-            } else if (direction == 1 && row > 0 && data[row - 1][col] == plant) {
-                --row;
-                direction = 0;
-                ++perimeter;
-            } else if (direction == 2 && col < data[row].size() - 1 && data[row][col + 1] == plant) {
-                ++col;
-                direction = 1;
-                ++perimeter;
-            } else if (direction == 3 && row < data.size() - 1 && data[row + 1][col] == plant) {
-                ++row;
-                direction = 2;
-                ++perimeter;
-            }
-        } while (row != r0 || col != c0 || direction != d0);
+        if ((r == 0 && c == 0) || (r == 0 && c == maxC) || (r == maxR && c == 0) || (r == maxR && c == maxC)) {
+            ++numCorners;
+            // TODO: Check if another corner that is not the edge of the garden
+        } else if (data[r][c + 1] != plant && data[r][c - 1] != plant && data[r - 1][c] != plant && data[r + 1][c] != plant) {
+            numCorners += 4;  // Surrounded by other plants
+        }
+        if (data[r][c] == plant && data[r][c + 1] != plant && plant && data[r - 1][c] != plant) {
+            ++numCorners;
+        }
     }
-    // Error with this condition
 
-    return perimeter;
+    return numCorners;
 }
 
 void part2(std::vector<std::string> data) {
