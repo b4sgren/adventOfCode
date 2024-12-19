@@ -49,16 +49,19 @@ void part1(const std::vector<std::pair<size_t, size_t>> &data) {
         grid[pair.first][pair.second] = '#';
     }
 
-    size_t row{0}, col{0};
+    // TODO: Track the cost (dist) and switch to a priority queue
+    size_t row{0}, col{0}, cost{0};
     std::vector<std::vector<bool>> visited(MAXR, std::vector<bool>(MAXC, false));
-    std::stack<std::pair<size_t, size_t>> stack{};
+    // std::stack<std::pair<size_t, size_t>> stack{};
+    std::priority_queue<std::tuple<size_t, size_t, size_t>, std::vector<std::tuple<size_t, size_t, size_t>>, std::greater<std::tuple<size_t, size_t, size_t>>> stack{};
     std::map<std::pair<size_t, size_t>, std::pair<size_t, size_t>> parent{};
-    stack.push({row, col});
+    stack.push({0, row, col});
     while (!stack.empty()) {
         auto pair = stack.top();
         stack.pop();
-        row = pair.first;
-        col = pair.second;
+        cost = std::get<0>(pair);
+        row = std::get<1>(pair);
+        col = std::get<2>(pair);
 
         if (visited[row][col]) continue;
         visited[row][col] = true;
@@ -74,24 +77,24 @@ void part1(const std::vector<std::pair<size_t, size_t>> &data) {
 
         // Push new nodes onto the stack
         if (row > 0 && !visited[row - 1][col] && grid[row - 1][col] != '#') {
-            stack.push({row - 1, col});
+            stack.push({cost + 1, row - 1, col});
             if (parent.count({row - 1, col}) == 0)
-                parent.insert({{row - 1, col}, pair});
+                parent.insert({{row - 1, col}, {row, col}});
         }
         if (row < MAXR - 1 && !visited[row + 1][col] && grid[row + 1][col] != '#') {
-            stack.push({row + 1, col});
+            stack.push({cost + 1, row + 1, col});
             if (parent.count({row + 1, col}) == 0)
-                parent.insert({{row + 1, col}, pair});
+                parent.insert({{row + 1, col}, {row, col}});
         }
         if (col > 0 && !visited[row][col - 1] && grid[row][col - 1] != '#') {
-            stack.push({row, col - 1});
+            stack.push({cost + 1, row, col - 1});
             if (parent.count({row, col - 1}) == 0)
-                parent.insert({{row, col - 1}, pair});
+                parent.insert({{row, col - 1}, {row, col}});
         }
         if (col < MAXC - 1 && !visited[row][col + 1] && grid[row][col + 1] != '#') {
-            stack.push({row, col + 1});
+            stack.push({cost + 1, row, col + 1});
             if (parent.count({row, col + 1}) == 0)
-                parent.insert({{row, col + 1}, pair});
+                parent.insert({{row, col + 1}, {row, col}});
         }
     }
 
@@ -102,7 +105,8 @@ void part1(const std::vector<std::pair<size_t, size_t>> &data) {
         pair = parent[pair];
     }
 
-    std::cout << "Part 1: " << numSteps << std::endl;
+    // std::cout << "Part 1: " << numSteps << std::endl;
+    std::cout << "Part 1: " << cost << std::endl;
 }
 
 int main(int argc, char *argv[]) {
