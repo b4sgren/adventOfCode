@@ -109,6 +109,80 @@ void part1(const std::vector<std::pair<size_t, size_t>> &data) {
     std::cout << "Part 1: " << cost << std::endl;
 }
 
+void part2(const std::vector<std::pair<size_t, size_t>> &data) {
+    std::vector<std::string> grid{};
+    for (size_t i{0}; i != MAXR; ++i) {
+        std::string temp = "";
+        for (size_t j{0}; j != MAXC; ++j)
+            temp += '.';
+        grid.push_back(temp);
+    }
+
+    // I know that I can start here
+    for (size_t i{0}; i != MAXITER; ++i) {
+        auto pair = data[i];
+        grid[pair.first][pair.second] = '#';
+    }
+
+    size_t row{0}, col{0}, cost{0};
+    std::vector<std::vector<bool>> visited(MAXR, std::vector<bool>(MAXC, false));
+    // std::stack<std::pair<size_t, size_t>> stack{};
+    std::priority_queue<std::tuple<size_t, size_t, size_t>, std::vector<std::tuple<size_t, size_t, size_t>>, std::greater<std::tuple<size_t, size_t, size_t>>> stack{};
+    std::map<std::pair<size_t, size_t>, std::pair<size_t, size_t>> parent{};
+    stack.push({0, row, col});
+    while (!stack.empty()) {
+        auto pair = stack.top();
+        stack.pop();
+        cost = std::get<0>(pair);
+        row = std::get<1>(pair);
+        col = std::get<2>(pair);
+
+        if (visited[row][col]) continue;
+        visited[row][col] = true;
+        grid[row][col] = 'X';
+
+        for (auto str : grid)
+            std::cout << str << "\n";
+        std::cout << "============================\n"
+                  << std::endl;
+
+        if (row == MAXR - 1 && col == MAXC - 1)  // Reached the end
+            break;
+
+        // Push new nodes onto the stack
+        if (row > 0 && !visited[row - 1][col] && grid[row - 1][col] != '#') {
+            stack.push({cost + 1, row - 1, col});
+            if (parent.count({row - 1, col}) == 0)
+                parent.insert({{row - 1, col}, {row, col}});
+        }
+        if (row < MAXR - 1 && !visited[row + 1][col] && grid[row + 1][col] != '#') {
+            stack.push({cost + 1, row + 1, col});
+            if (parent.count({row + 1, col}) == 0)
+                parent.insert({{row + 1, col}, {row, col}});
+        }
+        if (col > 0 && !visited[row][col - 1] && grid[row][col - 1] != '#') {
+            stack.push({cost + 1, row, col - 1});
+            if (parent.count({row, col - 1}) == 0)
+                parent.insert({{row, col - 1}, {row, col}});
+        }
+        if (col < MAXC - 1 && !visited[row][col + 1] && grid[row][col + 1] != '#') {
+            stack.push({cost + 1, row, col + 1});
+            if (parent.count({row, col + 1}) == 0)
+                parent.insert({{row, col + 1}, {row, col}});
+        }
+    }
+
+    size_t numSteps{0};
+    std::pair<size_t, size_t> pair{MAXR - 1, MAXC - 1};
+    while (parent.count(pair) != 0) {
+        ++numSteps;
+        pair = parent[pair];
+    }
+
+    // std::cout << "Part 1: " << numSteps << std::endl;
+    std::cout << "Part 1: " << cost << std::endl;
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         std::cout << "Input the path to the input file" << std::endl;
