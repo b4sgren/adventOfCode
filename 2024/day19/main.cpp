@@ -11,6 +11,8 @@
 #include <tuple>
 #include <vector>
 
+std::map<std::string, bool> mapping{};
+
 void parseData(const std::string &file, std::vector<std::string> &towels, std::vector<std::string> &designs) {
     std::ifstream fin{file};
     if (!fin.is_open()) return;
@@ -32,10 +34,13 @@ void parseData(const std::string &file, std::vector<std::string> &towels, std::v
 }
 
 bool canMakeDesign(const std::string &design, const std::vector<std::string> &towels) {
+    if (mapping.count(design) != 0) return mapping[design];
+
     for (std::string towel : towels) {
         const size_t size = towel.size();
         if (size > design.size()) continue;
         if (size == design.size() && towel == design) {
+            mapping[design] = true;
             return true;
         } else if (size == design.size()) {
             continue;
@@ -43,10 +48,14 @@ bool canMakeDesign(const std::string &design, const std::vector<std::string> &to
 
         const std::string temp = design.substr(0, size);
         if (temp == towel) {
-            if (canMakeDesign(design.substr(size), towels)) return true;
+            if (canMakeDesign(design.substr(size), towels)) {
+                mapping[design] = true;
+                return true;
+            }
         }
     }
 
+    mapping[design] = false;
     return false;
 }
 
@@ -55,6 +64,7 @@ void part1(const std::vector<std::string> &towels, const std::vector<std::string
     int numPossible{0};
 
     for (std::string design : designs) {
+        mapping.clear();
         if (canMakeDesign(design, towels))
             ++numPossible;
     }
