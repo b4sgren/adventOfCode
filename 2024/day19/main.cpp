@@ -12,6 +12,7 @@
 #include <vector>
 
 std::map<std::string, bool> mapping{};
+std::map<std::string, int> mapping2{};
 
 void parseData(const std::string &file, std::vector<std::string> &towels, std::vector<std::string> &designs) {
     std::ifstream fin{file};
@@ -59,17 +60,51 @@ bool canMakeDesign(const std::string &design, const std::vector<std::string> &to
     return false;
 }
 
-// Have to use dynamic programming
 void part1(const std::vector<std::string> &towels, const std::vector<std::string> &designs) {
     int numPossible{0};
 
     for (std::string design : designs) {
-        mapping.clear();
+        // mapping.clear();
         if (canMakeDesign(design, towels))
             ++numPossible;
     }
 
     std::cout << "Part 1: " << numPossible << std::endl;
+}
+
+int canMakeDesign2(const std::string &design, const std::vector<std::string> &towels) {
+    if (mapping2[design] != 0) {
+        return mapping2[design];
+    }
+
+    for (std::string towel : towels) {
+        const size_t size = towel.size();
+        if (size > design.size()) continue;
+        if (size == design.size() && towel == design) {
+            mapping2[design]++;
+        } else if (size == design.size()) {
+            continue;
+        }
+
+        const std::string temp = design.substr(0, size);
+        if (temp == towel) {
+            mapping2[design] += canMakeDesign2(design.substr(size), towels);
+        }
+    }
+
+    // mapping[design] = 0;
+    return mapping[design];
+}
+
+// ALso need DP but it will be slightly different
+// Store the number
+void part2(const std::vector<std::string> &towels, const std::vector<std::string> &designs) {
+    int numPossible{0};
+    for (std::string design : designs) {
+        numPossible += canMakeDesign2(design, towels);
+    }
+
+    std::cout << "Part 2: " << numPossible << std::endl;
 }
 
 int main(int argc, char *argv[]) {
@@ -84,6 +119,7 @@ int main(int argc, char *argv[]) {
     parseData(input_file, towels, designs);
 
     part1(towels, designs);
+    part2(towels, designs);
 
     return 0;
 }
