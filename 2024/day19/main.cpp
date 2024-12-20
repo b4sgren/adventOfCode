@@ -12,7 +12,7 @@
 #include <vector>
 
 std::map<std::string, bool> mapping{};
-std::map<std::string, int> mapping2{};
+std::map<std::string, int64_t> mapping2{};
 
 void parseData(const std::string &file, std::vector<std::string> &towels, std::vector<std::string> &designs) {
     std::ifstream fin{file};
@@ -72,8 +72,8 @@ void part1(const std::vector<std::string> &towels, const std::vector<std::string
     std::cout << "Part 1: " << numPossible << std::endl;
 }
 
-int canMakeDesign2(const std::string &design, const std::vector<std::string> &towels) {
-    // if (mapping2[design] != 0) {
+int64_t canMakeDesign2(const std::string &design, const std::vector<std::string> &towels) {
+    // if (!mapping[design]) return 0;
     if (mapping2.count(design) != 0) {
         return mapping2[design];
     }
@@ -93,14 +93,14 @@ int canMakeDesign2(const std::string &design, const std::vector<std::string> &to
         }
     }
 
-    // mapping[design] = 0;
     return mapping2[design];
 }
 
 // ALso need DP but it will be slightly different
 // Store the number
-void part2(const std::vector<std::string> &towels, const std::vector<std::string> &designs) {
-    int numPossible{0};
+void part2(std::vector<std::string> towels, const std::vector<std::string> &designs) {
+    std::sort(towels.begin(), towels.end());
+    int64_t numPossible{0};
     for (std::string design : designs) {
         numPossible += canMakeDesign2(design, towels);
     }
