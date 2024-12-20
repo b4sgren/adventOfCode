@@ -105,15 +105,38 @@ void part1(const std::vector<std::string> &data) {
     std::cout << "Part 1: " << cheatPoints.size() << std::endl;
 }
 
-bool savesTime2(std::vector<std::string> data, Point pt) {
-    auto start = pt.start;
-    auto end = pt.end;
-    size_t dist = abs(static_cast<int>(start.first) - static_cast<int>(end.first)) +
-                  abs(static_cast<int>(start.second) - static_cast<int>(end.second));
+std::vector<std::pair<size_t, size_t>> getClosePoints(size_t r, size_t c) {
+    std::vector<std::pair<size_t, size_t>> pts{};
+    for (size_t i{0}; i != 21; ++i) {
+        for (size_t j{0}; j != 21; ++j) {
+            if (i == r && j == c) continue;
+            if (i + j > 20) continue;
+            pts.emplace_back(i, j);
+        }
+    }
+
+    return pts;
+}
+
+// Cheat time of 20 picoseconds
+// Compute cost from start to every point on the original path
+// COmpute cost between any two points
+// COmpute savings by subtracting manhattan distance from cost
+void part2(const std::vector<std::string> &data_) {
+    size_t row, col;
+    for (int i{0}; i != data_.size(); ++i) {
+        auto idx = data_[i].find('S');
+        if (idx != std::string::npos) {
+            row = i;
+            col = idx;
+        }
+    }
 
     // BFS but keep track of distance
-    size_t row{start.first}, col{start.second}, cost{0};
+    auto data = data_;
+    size_t cost{0};
     std::vector<std::vector<bool>> visited(data.size(), std::vector<bool>(data[0].size(), false));
+    std::map<std::pair<size_t, size_t>, int> costMap{};
     std::priority_queue<std::tuple<size_t, size_t, size_t>, std::vector<std::tuple<size_t, size_t, size_t>>, std::greater<std::tuple<size_t, size_t, size_t>>> stack{};
     stack.push({0, row, col});
     while (!stack.empty()) {
@@ -125,20 +148,17 @@ bool savesTime2(std::vector<std::string> data, Point pt) {
 
         if (visited[row][col]) continue;
         visited[row][col] = true;
-        data[row][col] = 'X';
+        costMap.insert({std::make_pair(row, col), static_cast<int>(cost)});
 
         // for (auto str : grid)
         //     std::cout << str << "\n";
         // std::cout << "============================\n"
         //           << std::endl;
 
-        if (row == end.first && col == end.second) {  // Reached the end
-            // This will be the cost - the manhattan distance between start and end
-            if (cost - dist >= MINTIMESAVED)
-                return true;
-            else
-                return false;
+        if (data[row][col] == 'E') {  // Reached the end
+            break;
         }
+        data[row][col] = 'X';
 
         // Push new nodes onto the stack
         if (row > 0 && !visited[row - 1][col] && data[row - 1][col] != '#') {
@@ -155,26 +175,22 @@ bool savesTime2(std::vector<std::string> data, Point pt) {
         }
     }
 
-    // Paths didn't meet up
-    return false;
-}
-
-// Cheat time of 20 picoseconds
-void part2(const std::vector<std::string> &data) {
-    // No need to check first/last row, col
-    std::set<Point> cheatPoints{};
+    std::vector<Point> cheatPoints{};
     for (size_t i{1}; i != data.size() - 1; ++i) {
         for (size_t j{1}; j != data[i].size() - 1; ++j) {
-            if (data[i][j] == '#' && data[i][j + 1] != '#' && data[i][j - 1] != '#') {
-                const Point pt{std::make_pair(i, j - 1), std::make_pair(i, j + 1)};
-                if (savesTime2(data, pt)) {
-                    cheatPoints.insert(pt);
-                }
-            } else if (data[i][j] == '#' && data[i + 1][j] != '#' && data[i - 1][j] != '#') {
-                const Point pt{std::make_pair(i - 1, j), std::make_pair(i + 1, j)};
-                if (savesTime2(data, pt)) {
-                    cheatPoints.insert(pt);
-                }
+            if (data[i][j] != '.')
+                continue;
+            const auto closePoints = getClosePoints(i, j);
+            for (auto pt : closePoints) {
+                size_t r{pt.first}, c{pt.second};
+                if (data_[r][c] == '#') continue;
+                int shortcutDist = abs(static_cast<int>(i) - static_cast<int>(r)) + abs(static_cast<int>(j) - static_cast<int>(c));
+                int dist1 = costMap[{i, j}];
+                int dist2 = costMap[{r, c}];
+                int dist = dist1 - dist2;
+
+                if (dist - shortcutDist > MINTIMESAVED)
+                    cheatPoints.push_back(Point{std::make_pair(i, j), std::make_pair(r, c)});
             }
         }
     }
@@ -193,6 +209,7 @@ int main(int argc, char *argv[]) {
     parseData(input_file, data);
 
     part1(data);
+    part2(data);
 
     return 0;
 }
