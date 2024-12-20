@@ -11,7 +11,7 @@
 #include <tuple>
 #include <vector>
 
-constexpr int MINTIMESAVED = 60;
+constexpr int MINTIMESAVED = 1;
 // constexpr int MINTIMESAVED = 100;
 
 void parseData(const std::string &file, std::vector<std::string> &data) {
@@ -55,7 +55,7 @@ bool savesTime(std::vector<std::string> data, Point pt) {
         //           << std::endl;
 
         if (row == end.first && col == end.second) {  // Reached the end
-            if (cost >= MINTIMESAVED)
+            if (cost - 2 >= MINTIMESAVED)
                 return true;
             else
                 return false;
