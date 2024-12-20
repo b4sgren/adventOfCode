@@ -145,7 +145,8 @@ void moveRobot2(std::vector<std::string> &map, size_t &row, size_t &col, char di
             // Special checks for vertical
             std::queue<std::pair<size_t, size_t>> queue{};
             queue.push({counterR, counterC});
-            mapCopy[counterR][counterC] = '.';
+            mapCopy[counterR][counterC] = '@';
+            mapCopy[row][col] = '.';
             if (map[counterR][counterC] == '[') {
                 queue.push({counterR, counterC + 1});
                 mapCopy[counterR][counterC + 1] = '.';
@@ -160,7 +161,6 @@ void moveRobot2(std::vector<std::string> &map, size_t &row, size_t &col, char di
                 return;
             }
 
-            // I get to a . and i still add nodes
             std::set<std::pair<size_t, size_t>> visited{};
             while (!queue.empty()) {
                 auto pair = queue.front();
@@ -185,6 +185,8 @@ void moveRobot2(std::vector<std::string> &map, size_t &row, size_t &col, char di
                 mapCopy[r + rowDir][c] = map[r][c];
             }
 
+            row = nextR;
+            col = nextC;
             map = mapCopy;
             return;
         }
