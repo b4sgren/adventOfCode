@@ -110,6 +110,7 @@ void moveRobot2(std::vector<std::string> &map, size_t &row, size_t &col, char di
 
     nextR += rowDir;
     nextC += colDir;
+    if (map[nextR][nextC] == '#') return;
 
     // Edits
     //  Shift the whole string not just the last bit
@@ -127,6 +128,7 @@ void moveRobot2(std::vector<std::string> &map, size_t &row, size_t &col, char di
     while (map[counterR][counterC] != '#') {
         counterR += rowDir;
         counterC += colDir;
+        if (map[counterR][counterC] == '#') return;
         if (direction == '<' || direction == '>') {
             if (map[counterR][counterC] == '.') {
                 // Shift boxes
@@ -228,9 +230,10 @@ void part2(std::vector<std::string> map, const std::string &directions) {
         std::cout << str << std::endl;
     std::cout << "==========================\n";
 
+    int i{0};
     for (char dir : directions) {
         moveRobot2(newMap, row, col, dir);
-        std::cout << dir << std::endl;
+        std::cout << i++ << "\t" << dir << std::endl;
         for (std::string str : newMap)
             std::cout << str << std::endl;
         std::cout << "==========================\n";
