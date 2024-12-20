@@ -11,8 +11,8 @@
 #include <tuple>
 #include <vector>
 
-constexpr int MINTIMESAVED = 50;
-// constexpr int MINTIMESAVED = 100;
+// constexpr int MINTIMESAVED = 50;
+constexpr int MINTIMESAVED = 100;
 
 void parseData(const std::string &file, std::vector<std::string> &data) {
     std::ifstream fin{file};
@@ -25,8 +25,8 @@ void parseData(const std::string &file, std::vector<std::string> &data) {
 }
 
 struct Point {
-    std::pair<size_t, size_t> start;
-    std::pair<size_t, size_t> end;
+    std::pair<int, int> start;
+    std::pair<int, int> end;
 };
 
 bool savesTime(std::vector<std::string> data, Point pt) {
@@ -34,9 +34,9 @@ bool savesTime(std::vector<std::string> data, Point pt) {
     auto end = pt.end;
 
     // BFS but keep track of distance
-    size_t row{start.first}, col{start.second}, cost{0};
+    int row{start.first}, col{start.second}, cost{0};
     std::vector<std::vector<bool>> visited(data.size(), std::vector<bool>(data[0].size(), false));
-    std::priority_queue<std::tuple<size_t, size_t, size_t>, std::vector<std::tuple<size_t, size_t, size_t>>, std::greater<std::tuple<size_t, size_t, size_t>>> stack{};
+    std::priority_queue<std::tuple<int, int, int>, std::vector<std::tuple<int, int, int>>, std::greater<std::tuple<int, int, int>>> stack{};
     stack.push({0, row, col});
     while (!stack.empty()) {
         auto pair = stack.top();
@@ -86,8 +86,8 @@ void part1(const std::vector<std::string> &data) {
 
     // No need to check first/last row, col
     std::vector<Point> cheatPoints{};
-    for (size_t i{1}; i != data.size() - 1; ++i) {
-        for (size_t j{1}; j != data[i].size() - 1; ++j) {
+    for (int i{1}; i != data.size() - 1; ++i) {
+        for (int j{1}; j != data[i].size() - 1; ++j) {
             if (data[i][j] == '#' && data[i][j + 1] != '#' && data[i][j - 1] != '#') {
                 const Point pt{std::make_pair(i, j - 1), std::make_pair(i, j + 1)};
                 if (savesTime(data, pt)) {
@@ -105,13 +105,14 @@ void part1(const std::vector<std::string> &data) {
     std::cout << "Part 1: " << cheatPoints.size() << std::endl;
 }
 
-std::vector<std::pair<size_t, size_t>> getClosePoints(size_t r, size_t c) {
-    std::vector<std::pair<size_t, size_t>> pts{};
-    for (size_t i{0}; i != 21; ++i) {
-        for (size_t j{0}; j != 21; ++j) {
+std::vector<std::pair<int, int>> getClosePoints(int r, int c, const std::vector<std::string> &data) {
+    std::vector<std::pair<int, int>> pts{};
+    for (int i{0}; i != 21; ++i) {
+        for (int j{0}; j != 21; ++j) {
             if (i == r && j == c) continue;
             if (i + j > 20) continue;
-            pts.emplace_back(i, j);
+            if (i >= data.size() || j >= data[0].size())
+                pts.emplace_back(i, j);
         }
     }
 
@@ -123,7 +124,7 @@ std::vector<std::pair<size_t, size_t>> getClosePoints(size_t r, size_t c) {
 // COmpute cost between any two points
 // COmpute savings by subtracting manhattan distance from cost
 void part2(const std::vector<std::string> &data_) {
-    size_t row, col;
+    int row, col;
     for (int i{0}; i != data_.size(); ++i) {
         auto idx = data_[i].find('S');
         if (idx != std::string::npos) {
@@ -134,10 +135,10 @@ void part2(const std::vector<std::string> &data_) {
 
     // BFS but keep track of distance
     auto data = data_;
-    size_t cost{0};
+    int cost{0};
     std::vector<std::vector<bool>> visited(data.size(), std::vector<bool>(data[0].size(), false));
-    std::map<std::pair<size_t, size_t>, int> costMap{};
-    std::priority_queue<std::tuple<size_t, size_t, size_t>, std::vector<std::tuple<size_t, size_t, size_t>>, std::greater<std::tuple<size_t, size_t, size_t>>> stack{};
+    std::map<std::pair<int, int>, int> costMap{};
+    std::priority_queue<std::tuple<int, int, int>, std::vector<std::tuple<int, int, int>>, std::greater<std::tuple<int, int, int>>> stack{};
     stack.push({0, row, col});
     while (!stack.empty()) {
         auto pair = stack.top();
@@ -176,13 +177,13 @@ void part2(const std::vector<std::string> &data_) {
     }
 
     std::vector<Point> cheatPoints{};
-    for (size_t i{1}; i != data.size() - 1; ++i) {
-        for (size_t j{1}; j != data[i].size() - 1; ++j) {
-            if (data[i][j] != '.')
+    for (int i{1}; i != data_.size() - 1; ++i) {
+        for (int j{1}; j != data_[i].size() - 1; ++j) {
+            if (data_[i][j] != '.')
                 continue;
-            const auto closePoints = getClosePoints(i, j);
+            const auto closePoints = getClosePoints(i, j, data_);
             for (auto pt : closePoints) {
-                size_t r{pt.first}, c{pt.second};
+                int r{pt.first}, c{pt.second};
                 if (data_[r][c] == '#') continue;
                 int shortcutDist = abs(static_cast<int>(i) - static_cast<int>(r)) + abs(static_cast<int>(j) - static_cast<int>(c));
                 int dist1 = costMap[{i, j}];
@@ -209,7 +210,7 @@ int main(int argc, char *argv[]) {
     parseData(input_file, data);
 
     part1(data);
-    part2(data);
+    // part2(data);
 
     return 0;
 }
