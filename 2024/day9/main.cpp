@@ -79,7 +79,7 @@ void part2(std::string data) {
         }
 
         // Increment even if this field in 0 in data??
-        if (i % 2 == 0) ++fileId;
+        if (i % 2 == 0 && val > 0) ++fileId;
     }
 
     // for (std::string str : fileString)
@@ -88,12 +88,10 @@ void part2(std::string data) {
 
     // Start moving freespace
     int64_t backR{fileString.size() - 1}, backL{fileString.size() - 1};
-    while (fileString[backL] == ".")
-        --backL;
-    backR = backL;
-    while (fileString[backL] == fileString[backR])
-        --backL;
-    ++backL;
+    // while (fileString[backL] == ".")
+    //     --backL;
+    // backR = backL;
+    // ++backL;
     int64_t frontL{0};
     while (fileString[frontL] != ".")
         ++frontL;
@@ -118,10 +116,10 @@ void part2(std::string data) {
         if (frontR < backL) {  // Switch stuff
             const size_t size = backR - backL + 1;
             for (size_t i{0}; i != size; ++i) {
-                std::cout << fileString[backL + i] << " ";
+                // std::cout << fileString[backL + i] << " ";
                 std::swap(fileString[frontL + i], fileString[backL + i]);
             }
-            std::cout << std::endl;
+            // std::cout << std::endl;
             frontL = 0;
             frontR = 0;
             --backL;
@@ -129,6 +127,9 @@ void part2(std::string data) {
                 --backL;
             }
             backR = backL;
+            while (fileString[backL] == fileString[backR])
+                --backL;
+            ++backL;
 
             // for (std::string str : fileString)
             //     std::cout << str;
@@ -139,9 +140,9 @@ void part2(std::string data) {
             while (fileString[backL] == ".")
                 --backL;
             backR = backL;
-            while (fileString[backL] == fileString[backR])
-                --backL;
-            ++backL;
+            // while (fileString[backL] == fileString[backR])
+            //     --backL;
+            // ++backL;
             frontL = 0;
             frontR = 0;
         }
