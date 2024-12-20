@@ -11,8 +11,8 @@
 #include <tuple>
 #include <vector>
 
-// constexpr int MINTIMESAVED = 50;
-constexpr int MINTIMESAVED = 100;
+constexpr int MINTIMESAVED = 50;
+// constexpr int MINTIMESAVED = 100;
 
 void parseData(const std::string &file, std::vector<std::string> &data) {
     std::ifstream fin{file};
@@ -107,12 +107,12 @@ void part1(const std::vector<std::string> &data) {
 
 std::vector<std::pair<int, int>> getClosePoints(int r, int c, const std::vector<std::string> &data) {
     std::vector<std::pair<int, int>> pts{};
-    for (int i{0}; i != 21; ++i) {
-        for (int j{0}; j != 21; ++j) {
+    for (int i{-20}; i != 21; ++i) {
+        for (int j{-20}; j != 21; ++j) {
             if (i == r && j == c) continue;
-            if (i + j > 20) continue;
-            if (i >= data.size() || j >= data[0].size())
-                pts.emplace_back(i, j);
+            if (abs(i) + abs(j) > 20) continue;
+            if (r + i >= data.size() || c + j >= data[0].size() || r + i < 0 || c + j < 0) continue;
+            pts.emplace_back(r + i, c + j);
         }
     }
 
@@ -149,7 +149,7 @@ void part2(const std::vector<std::string> &data_) {
 
         if (visited[row][col]) continue;
         visited[row][col] = true;
-        costMap.insert({std::make_pair(row, col), static_cast<int>(cost)});
+        costMap.insert({std::make_pair(row, col), cost});
 
         // for (auto str : grid)
         //     std::cout << str << "\n";
@@ -179,18 +179,18 @@ void part2(const std::vector<std::string> &data_) {
     std::vector<Point> cheatPoints{};
     for (int i{1}; i != data_.size() - 1; ++i) {
         for (int j{1}; j != data_[i].size() - 1; ++j) {
-            if (data_[i][j] != '.')
+            if (data_[i][j] == '#')
                 continue;
             const auto closePoints = getClosePoints(i, j, data_);
             for (auto pt : closePoints) {
                 int r{pt.first}, c{pt.second};
                 if (data_[r][c] == '#') continue;
-                int shortcutDist = abs(static_cast<int>(i) - static_cast<int>(r)) + abs(static_cast<int>(j) - static_cast<int>(c));
+                int shortcutDist = abs(i - r) + abs(j - c);
                 int dist1 = costMap[{i, j}];
                 int dist2 = costMap[{r, c}];
                 int dist = dist1 - dist2;
 
-                if (dist - shortcutDist > MINTIMESAVED)
+                if (dist - shortcutDist >= MINTIMESAVED)
                     cheatPoints.push_back(Point{std::make_pair(i, j), std::make_pair(r, c)});
             }
         }
@@ -210,7 +210,7 @@ int main(int argc, char *argv[]) {
     parseData(input_file, data);
 
     part1(data);
-    // part2(data);
+    part2(data);
 
     return 0;
 }
