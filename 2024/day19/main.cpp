@@ -73,7 +73,8 @@ void part1(const std::vector<std::string> &towels, const std::vector<std::string
 }
 
 int canMakeDesign2(const std::string &design, const std::vector<std::string> &towels) {
-    if (mapping2[design] != 0) {
+    // if (mapping2[design] != 0) {
+    if (mapping2.count(design) != 0) {
         return mapping2[design];
     }
 
@@ -93,7 +94,7 @@ int canMakeDesign2(const std::string &design, const std::vector<std::string> &to
     }
 
     // mapping[design] = 0;
-    return mapping[design];
+    return mapping2[design];
 }
 
 // ALso need DP but it will be slightly different
@@ -119,7 +120,7 @@ int main(int argc, char *argv[]) {
     parseData(input_file, towels, designs);
 
     part1(towels, designs);
-    part2(towels, designs);
+    part2(towels, designs);  // 784859102 is to low
 
     return 0;
 }
