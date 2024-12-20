@@ -173,7 +173,8 @@ void moveRobot2(std::vector<std::string> &map, size_t &row, size_t &col, char di
                 if (visited.count(pair)) continue;
                 visited.insert(pair);
 
-                queue.push({r + rowDir, c});
+                if (map[r + rowDir][c] == '[' || map[r + rowDir][c] == ']')
+                    queue.push({r + rowDir, c});
                 // Add the partner block
                 if (map[r + rowDir][c] == '[' && visited.count({r + rowDir, c + 1}) == 0)
                     queue.push({row + rowDir, c + 1});
@@ -235,8 +236,8 @@ void part2(std::vector<std::string> map, const std::string &directions) {
 
     size_t sum{0};
     for (size_t i{0}; i != newMap.size(); ++i) {
-        for (size_t j{0}; j != map[i].size(); ++j) {
-            if (map[i][j] == 'O')
+        for (size_t j{0}; j != newMap[i].size(); ++j) {
+            if (newMap[i][j] == '[')
                 sum += 100 * i + j;
         }
     }
