@@ -69,24 +69,7 @@ class NumericKeypad {
                         const int colDist = n - j;
 
                         std::vector<char> temp{};
-                        if (j != 0) {
-                            int dir = sign(rowDist);
-                            for (int cnt{0}; cnt != rowDist; cnt += dir) {
-                                if (rowDist > 0)
-                                    temp.push_back('v');
-                                else
-                                    temp.push_back('^');
-                            }
-
-                            dir = sign(colDist);
-                            for (int cnt{0}; cnt != colDist; cnt += dir) {
-                                if (colDist > 0)
-                                    temp.push_back('>');
-                                else
-                                    temp.push_back('<');
-                            }
-                        } else {  // j == 0 : i.e. first col so move sideways first
-
+                        if (i != 3) {
                             int dir = sign(colDist);
                             for (int cnt{0}; cnt != colDist; cnt += dir) {
                                 if (colDist > 0)
@@ -101,6 +84,23 @@ class NumericKeypad {
                                     temp.push_back('v');
                                 else
                                     temp.push_back('^');
+                            }
+
+                        } else {  // j == 0 : i.e. first col so move sideways first
+                            int dir = sign(rowDist);
+                            for (int cnt{0}; cnt != rowDist; cnt += dir) {
+                                if (rowDist > 0)
+                                    temp.push_back('v');
+                                else
+                                    temp.push_back('^');
+                            }
+
+                            dir = sign(colDist);
+                            for (int cnt{0}; cnt != colDist; cnt += dir) {
+                                if (colDist > 0)
+                                    temp.push_back('>');
+                                else
+                                    temp.push_back('<');
                             }
                         }
                         temp.push_back('A');
