@@ -68,20 +68,38 @@ class NumericKeypad {
                         const int colDist = n - j;
 
                         std::vector<char> temp{};
-                        int dir = sign(rowDist);
-                        for (int cnt{0}; cnt != rowDist; cnt += dir) {
-                            if (rowDist > 0)
-                                temp.push_back('v');
-                            else
-                                temp.push_back('^');
-                        }
+                        if (i != 0) {
+                            int dir = sign(rowDist);
+                            for (int cnt{0}; cnt != rowDist; cnt += dir) {
+                                if (rowDist > 0)
+                                    temp.push_back('v');
+                                else
+                                    temp.push_back('^');
+                            }
 
-                        dir = sign(colDist);
-                        for (int cnt{0}; cnt != colDist; cnt += dir) {
-                            if (colDist > 0)
-                                temp.push_back('>');
-                            else
-                                temp.push_back('<');
+                            dir = sign(colDist);
+                            for (int cnt{0}; cnt != colDist; cnt += dir) {
+                                if (colDist > 0)
+                                    temp.push_back('>');
+                                else
+                                    temp.push_back('<');
+                            }
+                        } else {
+                            int dir = sign(colDist);
+                            for (int cnt{0}; cnt != colDist; cnt += dir) {
+                                if (colDist > 0)
+                                    temp.push_back('>');
+                                else
+                                    temp.push_back('<');
+                            }
+
+                            dir = sign(rowDist);
+                            for (int cnt{0}; cnt != rowDist; cnt += dir) {
+                                if (rowDist > 0)
+                                    temp.push_back('v');
+                                else
+                                    temp.push_back('^');
+                            }
                         }
                         temp.push_back('A');
 
@@ -200,7 +218,7 @@ void part1(const std::vector<std::string> &data) {
                 }
             }
         }
-        std::cout << code << ": ";
+        std::cout << code << " " << keyPresses.size() << ": ";
         for (char c : keyPresses)
             std::cout << c;
         std::cout << std::endl;
@@ -220,7 +238,7 @@ int main(int argc, char *argv[]) {
     std::vector<std::string> data{};
     parseData(input_file, data);
 
-    part1(data);
+    part1(data);  // 153516  is to low
 
     return 0;
 }
