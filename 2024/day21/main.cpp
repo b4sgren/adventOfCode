@@ -27,7 +27,7 @@ class NumericKeypad {
         keypad_.push_back(row3);
         keypad_.push_back(row4);
 
-        getMappings();
+        // getMappings();
     }
 
     std::vector<char> getMapping(char target) {
@@ -240,7 +240,7 @@ int main(int argc, char *argv[]) {
     std::vector<std::string> data{};
     parseData(input_file, data);
 
-    part1(data);  // 153516  is to low
+    part1(data);  // 153516  is to low, 159436 is to high. Paths need to be dynamic...
 
     return 0;
 }
