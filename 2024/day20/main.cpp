@@ -11,8 +11,8 @@
 #include <tuple>
 #include <vector>
 
-constexpr int MINTIMESAVED = 50;
-// constexpr int MINTIMESAVED = 100;
+// constexpr int MINTIMESAVED = 50;
+constexpr int MINTIMESAVED = 100;
 
 void parseData(const std::string &file, std::vector<std::string> &data) {
     std::ifstream fin{file};
