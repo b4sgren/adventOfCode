@@ -12,6 +12,7 @@
 #include <vector>
 
 // If a path takes me onto a ' ' key, switch that direction with the one after it
+// Need the least turns
 
 class NumericKeypad {
    public:
@@ -68,7 +69,7 @@ class NumericKeypad {
                         const int colDist = n - j;
 
                         std::vector<char> temp{};
-                        if (i != 0) {
+                        if (j != 0) {
                             int dir = sign(rowDist);
                             for (int cnt{0}; cnt != rowDist; cnt += dir) {
                                 if (rowDist > 0)
@@ -84,7 +85,8 @@ class NumericKeypad {
                                 else
                                     temp.push_back('<');
                             }
-                        } else {
+                        } else {  // j == 0 : i.e. first col so move sideways first
+
                             int dir = sign(colDist);
                             for (int cnt{0}; cnt != colDist; cnt += dir) {
                                 if (colDist > 0)
