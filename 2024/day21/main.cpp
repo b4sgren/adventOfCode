@@ -83,6 +83,7 @@ class NumericKeypad {
                             else
                                 temp.push_back('<');
                         }
+                        temp.push_back('A');
 
                         mappings[{keypad_[i][j], keypad_[m][n]}] = temp;
                     }
@@ -118,6 +119,7 @@ class DirectionKeypad {
         // Find target row/col
         int targetR{0}, targetC{0};
         for (; targetR != keypad_.size(); ++targetR) {
+            targetC = 0;
             for (; targetC != keypad_[0].size(); ++targetC)
                 if (target == keypad_[targetR][targetC]) {
                     row_ = targetR;
@@ -140,14 +142,14 @@ class DirectionKeypad {
         mappings[{'^', '^'}] = std::vector<char>{'A'};
         mappings[{'^', 'A'}] = std::vector<char>{'>', 'A'};
         mappings[{'^', '>'}] = std::vector<char>{'v', '>', 'A'};
-        mappings[{'^', 'v'}] = std::vector<char>{'v', '<', 'A'};
-        mappings[{'^', '<'}] = std::vector<char>{'v', '<', '<', 'A'};
+        mappings[{'^', 'v'}] = std::vector<char>{'v', 'A'};
+        mappings[{'^', '<'}] = std::vector<char>{'v', '<', 'A'};
 
         mappings[{'A', 'A'}] = std::vector<char>{'A'};
         mappings[{'A', '^'}] = std::vector<char>{'<', 'A'};
         mappings[{'A', '>'}] = std::vector<char>{'v', 'A'};
-        mappings[{'A', 'v'}] = std::vector<char>{'v', 'A'};
-        mappings[{'A', '<'}] = std::vector<char>{'v', '<', 'A'};
+        mappings[{'A', 'v'}] = std::vector<char>{'v', '<', 'A'};
+        mappings[{'A', '<'}] = std::vector<char>{'v', '<', '<', 'A'};
 
         mappings[{'>', 'A'}] = std::vector<char>{'^', 'A'};
         mappings[{'>', '^'}] = std::vector<char>{'<', '^', 'A'};
@@ -161,7 +163,7 @@ class DirectionKeypad {
         mappings[{'v', 'v'}] = std::vector<char>{'A'};
         mappings[{'v', '<'}] = std::vector<char>{'<', 'A'};
 
-        mappings[{'<', 'A'}] = std::vector<char>{'>', '^', '>', 'A'};
+        mappings[{'<', 'A'}] = std::vector<char>{'>', '>', '^', 'A'};
         mappings[{'<', '^'}] = std::vector<char>{'>', '^', 'A'};
         mappings[{'<', '>'}] = std::vector<char>{'>', '>', 'A'};
         mappings[{'<', 'v'}] = std::vector<char>{'>', 'A'};
@@ -194,13 +196,14 @@ void part1(const std::vector<std::string> &data) {
                 auto vec2 = dirKeypad1.getMapping(c2);
                 for (char c3 : vec2) {
                     auto vec3 = dirKeypad2.getMapping(c3);
-                    for (char c4 : vec3) {
-                        auto vec4 = dirKeypad3.getMapping(c4);
-                        std::move(vec4.begin(), vec4.end(), std::back_inserter(keyPresses));
-                    }
+                    std::move(vec3.begin(), vec3.end(), std::back_inserter(keyPresses));
                 }
             }
         }
+        std::cout << code << ": ";
+        for (char c : keyPresses)
+            std::cout << c;
+        std::cout << std::endl;
         complexity += std::stoi(code.substr(0, 3)) * keyPresses.size();
     }
 
