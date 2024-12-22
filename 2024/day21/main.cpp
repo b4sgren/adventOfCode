@@ -26,11 +26,9 @@ class NumericKeypad {
         keypad_.push_back(row2);
         keypad_.push_back(row3);
         keypad_.push_back(row4);
-
-        // getMappings();
     }
 
-    std::vector<char> getMapping(char target) {
+    std::vector<std::vector<char>> getMapping(char target) {
         char currentKey = keypad_[row_][col_];
 
         // Find target row/col
@@ -39,76 +37,84 @@ class NumericKeypad {
             targetC = 0;
             for (; targetC != keypad_[0].size(); ++targetC)
                 if (target == keypad_[targetR][targetC]) {
+                    auto vec = generateMappings(targetR, targetC);
                     row_ = targetR;
                     col_ = targetC;
-                    return mappings[{currentKey, keypad_[targetR][targetC]}];
+                    return vec;
                 }
         }
 
         std::cout << "ERROR: SHOULDN'T GET HERE" << std::endl;
-        return std::vector<char>{};
+        return std::vector<std::vector<char>>{};
     }
 
    private:
     std::vector<std::vector<char>> keypad_;
-    std::map<std::pair<char, char>, std::vector<char>> mappings{};
     int row_;
     int col_;
 
-    // This path may travel through the blank space. Can just switch the offending step with the following step to fix
-    void getMappings() {
-        for (int i{0}; i != keypad_.size(); ++i) {
-            for (int j{0}; j != keypad_[0].size(); ++j) {
-                if (keypad_[i][j] == ' ') continue;
+    std::vector<std::vector<char>> generateMappings(int targetR, int targetC) {
+        // Need to make sure that I do not pass through the empty keyspace
+        int deltaR{targetR}, deltaC{targetC};
 
-                for (int m{0}; m != keypad_.size(); ++m) {
-                    for (int n{0}; n != keypad_[0].size(); ++n) {
-                        if (keypad_[m][n] == ' ') continue;
+        // Special case
+        if ((row_ == 3 && targetC == 0) || (col_ == 0 && targetR == 3)) {
+            if (row_ == 3) {
+                // up then over
+                int dir{sign(deltaR)};
+                char symbol = dir >= 0 ? 'v' : '^';
+                std::vector<char> vec1(abs(deltaR), symbol);
 
-                        const int rowDist = m - i;
-                        const int colDist = n - j;
-
-                        std::vector<char> temp{};
-                        if (i != 3) {
-                            int dir = sign(colDist);
-                            for (int cnt{0}; cnt != colDist; cnt += dir) {
-                                if (colDist > 0)
-                                    temp.push_back('>');
-                                else
-                                    temp.push_back('<');
-                            }
-
-                            dir = sign(rowDist);
-                            for (int cnt{0}; cnt != rowDist; cnt += dir) {
-                                if (rowDist > 0)
-                                    temp.push_back('v');
-                                else
-                                    temp.push_back('^');
-                            }
-
-                        } else {  // j == 0 : i.e. first col so move sideways first
-                            int dir = sign(rowDist);
-                            for (int cnt{0}; cnt != rowDist; cnt += dir) {
-                                if (rowDist > 0)
-                                    temp.push_back('v');
-                                else
-                                    temp.push_back('^');
-                            }
-
-                            dir = sign(colDist);
-                            for (int cnt{0}; cnt != colDist; cnt += dir) {
-                                if (colDist > 0)
-                                    temp.push_back('>');
-                                else
-                                    temp.push_back('<');
-                            }
-                        }
-                        temp.push_back('A');
-
-                        mappings[{keypad_[i][j], keypad_[m][n]}] = temp;
-                    }
+                dir = sign(deltaC);
+                symbol = dir >= 0 ? '>' : '<';
+                for (int i{0}; i != deltaC; i += dir) {
+                    vec1.push_back(symbol);
                 }
+                vec1.push_back('A');
+
+                return std::vector<std::vector<char>>{vec1};
+
+            } else if (col_ == 0) {
+                // over then down
+                int dir{sign(deltaC)};
+                char symbol = dir >= 0 ? '>' : '<';
+                std::vector<char> vec1(abs(deltaC), symbol);
+
+                dir = sign(deltaR);
+                symbol = dir >= 0 ? 'v' : '^';
+                for (int i{0}; i != deltaR; i += dir) {
+                    vec1.push_back(symbol);
+                }
+                vec1.push_back('A');
+
+                return std::vector<std::vector<char>>{vec1};
+
+            } else {
+                std::cout << "NUM MAPPING ERROR: SHOULDNT GET HERE" << std::endl;
+                return std::vector<std::vector<char>>{};
             }
+        } else {
+            // 2 cases (2 edges of the rectangle)
+            int dir{sign(deltaR)};
+            char symbol = dir >= 0 ? 'v' : '^';
+            std::vector<char> vec1(abs(deltaR), symbol);
+
+            dir = sign(deltaC);
+            symbol = dir >= 0 ? '>' : '<';
+            std::vector<char> vec2{};
+            for (int i{0}; i != deltaC; i += dir) {
+                vec1.push_back(symbol);
+                vec2.push_back(symbol);
+            }
+
+            dir = sign(deltaR);
+            symbol = dir >= 0 ? 'v' : '^';
+            for (int i{0}; i != deltaR; i += dir)
+                vec2.push_back(symbol);
+            vec1.push_back('A');
+            vec2.push_back('A');
+
+            return std::vector<std::vector<char>>{vec1, vec2};
         }
     }
 
@@ -129,65 +135,91 @@ class DirectionKeypad {
         keypad_.push_back(row1);
         keypad_.push_back(row2);
 
-        getMappings();
+        generateMappings();
     }
 
-    // find the target and update the position
-    std::vector<char> getMapping(char target) {
-        char currentKey = keypad_[row_][col_];
+    std::vector<std::vector<char>> generateMappings(const std::vector<std::vector<char>> &routes) {
+        // Analyze the number of turns to pick the best one
+        // Which routes require the least turns
+        std::map<int, std::vector<int>> bestRoutes{};
+        char prevKey;
+        int idx{0}, minTurns{100000};
+        for (auto route : routes) {
+            prevKey = 'A';
+            int numTurns{0};
+            for (char dir : route) {
+                numTurns += mappings[{prevKey, dir}];
+                prevKey = dir;
+            }
+            bestRoutes[numTurns].push_back(idx);
+            if (numTurns < minTurns)
+                minTurns = numTurns;
 
-        // Find target row/col
-        int targetR{0}, targetC{0};
-        for (; targetR != keypad_.size(); ++targetR) {
-            targetC = 0;
-            for (; targetC != keypad_[0].size(); ++targetC)
-                if (target == keypad_[targetR][targetC]) {
-                    row_ = targetR;
-                    col_ = targetC;
-                    return mappings[{currentKey, keypad_[targetR][targetC]}];
-                }
+            ++idx;
         }
 
-        std::cout << "ERROR: SHOULDN'T GET HERE" << std::endl;
-        return std::vector<char>{};
+        // Get the routes for the robot
+        std::vector<std::vector<char>> nextRoutes{};
+        for (int id : bestRoutes[minTurns]) {
+            char prevKey = 'A';
+            std::vector<char> temp{};
+            for (char dir : routes[id]) {
+                if ((dir == '<' && (prevKey == 'A' || prevKey == '^')) || (prevKey == '<' && (dir == '^' || dir == 'A'))) {
+                    // One route
+                } else {
+                    int targetR{0}, targetC{0};
+                    for (; targetR != keypad_.size(); ++targetR) {
+                        targetC = 0;
+                        for (; targetC != keypad_[0].size(); ++targetC)
+                            if (dir == keypad_[targetR][targetC]) {
+                                auto vec = generateMappings(targetR, targetC);
+                                // std::move(vec.begin(), vec.end())
+                                row_ = targetR;
+                                col_ = targetC;
+                            }
+                    }
+                }
+            }
+        }
+        return nextRoutes;
     }
 
    private:
     std::vector<std::vector<char>> keypad_;
-    std::map<std::pair<char, char>, std::vector<char>> mappings{};
+    std::map<std::pair<char, char>, int> mappings{};
     int row_;
     int col_;
 
-    void getMappings() {
-        mappings[{'^', '^'}] = std::vector<char>{'A'};
-        mappings[{'^', 'A'}] = std::vector<char>{'>', 'A'};
-        mappings[{'^', '>'}] = std::vector<char>{'v', '>', 'A'};
-        mappings[{'^', 'v'}] = std::vector<char>{'v', 'A'};
-        mappings[{'^', '<'}] = std::vector<char>{'v', '<', 'A'};
+    void generateMappings() {
+        mappings[{'A', 'A'}] = 0;
+        mappings[{'A', '^'}] = 1;
+        mappings[{'A', '>'}] = 1;
+        mappings[{'A', 'v'}] = 2;
+        mappings[{'A', '<'}] = 2;
 
-        mappings[{'A', 'A'}] = std::vector<char>{'A'};
-        mappings[{'A', '^'}] = std::vector<char>{'<', 'A'};
-        mappings[{'A', '>'}] = std::vector<char>{'v', 'A'};
-        mappings[{'A', 'v'}] = std::vector<char>{'v', '<', 'A'};
-        mappings[{'A', '<'}] = std::vector<char>{'v', '<', '<', 'A'};
+        mappings[{'^', 'A'}] = 1;
+        mappings[{'^', '^'}] = 0;
+        mappings[{'^', '>'}] = 2;
+        mappings[{'^', 'v'}] = 1;
+        mappings[{'^', '<'}] = 2;
 
-        mappings[{'>', 'A'}] = std::vector<char>{'^', 'A'};
-        mappings[{'>', '^'}] = std::vector<char>{'<', '^', 'A'};
-        mappings[{'>', '>'}] = std::vector<char>{'A'};
-        mappings[{'>', 'v'}] = std::vector<char>{'<', 'A'};
-        mappings[{'>', '<'}] = std::vector<char>{'<', '<', 'A'};
+        mappings[{'>', 'A'}] = 1;
+        mappings[{'>', '^'}] = 2;
+        mappings[{'>', '>'}] = 0;
+        mappings[{'>', 'v'}] = 1;
+        mappings[{'>', '<'}] = 1;
 
-        mappings[{'v', 'A'}] = std::vector<char>{'^', '>', 'A'};
-        mappings[{'v', '^'}] = std::vector<char>{'^', 'A'};
-        mappings[{'v', '>'}] = std::vector<char>{'>', 'A'};
-        mappings[{'v', 'v'}] = std::vector<char>{'A'};
-        mappings[{'v', '<'}] = std::vector<char>{'<', 'A'};
+        mappings[{'v', 'A'}] = 2;
+        mappings[{'v', '^'}] = 1;
+        mappings[{'v', '>'}] = 1;
+        mappings[{'v', 'v'}] = 0;
+        mappings[{'v', '<'}] = 1;
 
-        mappings[{'<', 'A'}] = std::vector<char>{'>', '>', '^', 'A'};
-        mappings[{'<', '^'}] = std::vector<char>{'>', '^', 'A'};
-        mappings[{'<', '>'}] = std::vector<char>{'>', '>', 'A'};
-        mappings[{'<', 'v'}] = std::vector<char>{'>', 'A'};
-        mappings[{'<', '<'}] = std::vector<char>{'A'};
+        mappings[{'<', 'A'}] = 2;
+        mappings[{'<', '^'}] = 2;
+        mappings[{'<', '>'}] = 1;
+        mappings[{'<', 'v'}] = 1;
+        mappings[{'<', '<'}] = 0;
     }
 };
 
