@@ -29,20 +29,13 @@ void part1(const std::vector<int64_t> &data) {
     for (int64_t secretNum : data) {
         for (int i{0}; i != 2000; ++i) {
             // multiply, mix, prune
-            int64_t val = secretNum * 64;
-            secretNum = val ^ secretNum;
-            secretNum = secretNum % MODULO;
+            secretNum = ((secretNum * 64) ^ secretNum) % MODULO;
             // divide, mix, prune
-            val = secretNum / 32;
-            secretNum = val ^ secretNum;
-            secretNum = secretNum % MODULO;
+            secretNum = ((secretNum / 32) ^ secretNum) % MODULO;
             // multiply, mix, prune
-            val = secretNum * 2048;
-            secretNum = val ^ secretNum;
-            secretNum = secretNum % MODULO;
+            secretNum = ((secretNum * 2048) ^ secretNum) % MODULO;
 
-            secretNum = val;
-            std::cout << secretNum << std::endl;
+            // std::cout << secretNum << std::endl;
         }
 
         sum += secretNum;
