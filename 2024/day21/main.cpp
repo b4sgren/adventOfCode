@@ -172,7 +172,8 @@ class DirectionKeypad {
                         targetC = 0;
                         for (; targetC != keypad_[0].size(); ++targetC)
                             if (dir == keypad_[targetR][targetC]) {
-                                auto vec = generateMappings(targetR, targetC);
+                                // // THis just jumps into crazy complexity
+                                // auto vec = generateMappings(targetR, targetC);
                                 // std::move(vec.begin(), vec.end())
                                 row_ = targetR;
                                 col_ = targetC;
