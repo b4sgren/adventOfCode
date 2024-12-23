@@ -56,6 +56,97 @@ void part1(std::map<std::string, std::vector<std::string>> data) {
     std::cout << "Part 1: " << groups.size() << std::endl;
 }
 
+std::vector<std::string> current_clique{};
+std::vector<std::string> max_clique{};
+void find_max_clique(const std::string &v, std::map<std::string, std::vector<std::string>> graph) {
+    // Add the current vertex to the clique
+    current_clique.push_back(v);
+
+    // Check if the current clique is larger than the maximum clique
+    if (current_clique.size() > max_clique.size()) {
+        max_clique = current_clique;
+    }
+
+    // Try adding more vertices to the clique
+    // for (int u = v + 1; u < n; u++) {
+    for (std::string u : graph[v]) {
+        bool is_adjacent = true;
+        // for (std::string w : current_clique) {
+        for (std::string w : current_clique) {
+            auto it = std::find(graph[u].begin(), graph[u].end(), w);
+            // if (!graph[u][w]) {
+            if (it == graph[u].end()) {
+                is_adjacent = false;
+                break;
+            }
+        }
+        if (is_adjacent) {
+            find_max_clique(u, graph);
+        }
+    }
+
+    // Remove the current vertex from the clique
+    current_clique.pop_back();
+}
+
+// Modify to work. Should be much more efficient
+std::vector<std::string> findMaxKCore(std::map<std::string, std::vector<std::string>> graph) {
+    std::map<std::string, int> degree;
+    std::set<std::string> visited;
+
+    // Calculate the degree of each node
+    for (const auto &[node, neighbors] : graph) {
+        degree[node] = neighbors.size();
+    }
+
+    // Minimum priority queue to process nodes with the lowest degree first
+    std::priority_queue<std::pair<int, std::string>, std::vector<std::pair<int, std::string>>, std::greater<>> pq;
+    for (const auto &[node, deg] : degree) {
+        pq.push({deg, node});
+    }
+
+    int maxK = 0;
+    std::map<int, std::vector<std::string>> kCores;
+
+    while (!pq.empty()) {
+        auto [curDegree, node] = pq.top();
+        pq.pop();
+
+        if (visited.count(node)) continue;
+
+        maxK = std::max(maxK, curDegree);
+        visited.insert(node);
+
+        // Remove the node from its neighbors
+        for (std::string neighbor : graph.at(node)) {
+            if (!visited.count(neighbor)) {
+                degree[neighbor]--;
+                pq.push({degree[neighbor], neighbor});
+            }
+        }
+
+        kCores[maxK].push_back(node);
+    }
+
+    // The maximum k-core is represented by maxK
+    return kCores[maxK];
+}
+
+void part2(std::map<std::string, std::vector<std::string>> data) {
+    // Find the maximum clique
+    // for (auto pair : data) {
+    //     find_max_clique(pair.first, data);
+    // }
+    max_clique = findMaxKCore(data);
+
+    std::sort(max_clique.begin(), max_clique.end());
+    std::cout << max_clique.size() << std::endl;
+    std::cout << "Part 2: ";
+    for (std::string str : max_clique)
+        std::cout << str << ",";
+    std::cout << std::endl;
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         std::cout << "Input the path to the input file" << std::endl;
@@ -67,6 +158,7 @@ int main(int argc, char *argv[]) {
     parseData(input_file, data);
 
     part1(data);
+    part2(data);
 
     return 0;
 }
