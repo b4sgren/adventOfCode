@@ -70,7 +70,7 @@ void part1(std::map<std::string, int> wireMap, const std::vector<std::string> &g
     // Compile the number
     int64_t num{0};
     for (auto it{wireMap.rbegin()}; it != wireMap.rend(); ++it) {
-        std::cout << it->first << " " << it->second << std::endl;
+        // std::cout << it->first << " " << it->second << std::endl;
         if (it->first[0] != 'z') continue;
         num = (num << 1) + it->second;
     }
