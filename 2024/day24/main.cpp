@@ -30,23 +30,40 @@ void parseData(const std::string &file, std::map<std::string, int> &wireMap, std
 }
 
 void part1(std::map<std::string, int> wireMap, const std::vector<std::string> &gateMap) {
-    for (std::string str : gateMap) {
-        std::stringstream ss{str};
-        std::string wire1, wire2, wireOut, gate, temp;
-        std::getline(ss, wire1, ' ');
-        std::getline(ss, gate, ' ');
-        std::getline(ss, wire2, ' ');
-        std::getline(ss, temp, ' ');
-        std::getline(ss, wireOut, ' ');
+    std::vector<bool> flags(gateMap.size(), false);
+    while (std::find(flags.begin(), flags.end(), false) != flags.end()) {
+        size_t cnt{0};
+        for (std::string str : gateMap) {
+            // Already performed this operation
+            if (flags[cnt]) {
+                ++cnt;
+                continue;
+            }
+            std::stringstream ss{str};
+            std::string wire1, wire2, wireOut, gate, temp;
+            std::getline(ss, wire1, ' ');
+            std::getline(ss, gate, ' ');
+            std::getline(ss, wire2, ' ');
+            std::getline(ss, temp, ' ');
+            std::getline(ss, wireOut, ' ');
 
-        if (gate == "AND") {
-            wireMap[wireOut] = (wireMap[wire1] == wireMap[wire2] && wireMap[wire1] == 1) ? 1 : 0;
-        } else if (gate == "OR") {
-            wireMap[wireOut] = (wireMap[wire1] == 1 || wireMap[wire2] == 1) ? 1 : 0;
-        } else if (gate == "XOR") {
-            wireMap[wireOut] = (wireMap[wire1] != wireMap[wire2]) ? 1 : 0;
-        } else {
-            std::cout << "ERROR: SHOULDN'T BE HERE" << std::endl;
+            // Can't do this one yet
+            if (wireMap.count(wire1) == 0 || wireMap.count(wire2) == 0) {
+                ++cnt;
+                continue;
+            }
+
+            if (gate == "AND") {
+                wireMap[wireOut] = (wireMap[wire1] == wireMap[wire2] && wireMap[wire1] == 1) ? 1 : 0;
+            } else if (gate == "OR") {
+                wireMap[wireOut] = (wireMap[wire1] == 1 || wireMap[wire2] == 1) ? 1 : 0;
+            } else if (gate == "XOR") {
+                wireMap[wireOut] = (wireMap[wire1] != wireMap[wire2]) ? 1 : 0;
+            } else {
+                std::cout << "ERROR: SHOULDN'T BE HERE" << std::endl;
+            }
+            flags[cnt] = true;
+            ++cnt;
         }
     }
 
