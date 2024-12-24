@@ -133,17 +133,36 @@ std::vector<std::string> findMaxKCore(std::map<std::string, std::vector<std::str
 }
 
 void part2(std::map<std::string, std::vector<std::string>> data) {
-    // Find the maximum clique
+    // // Find the maximum clique. takes to long
     // for (auto pair : data) {
     //     find_max_clique(pair.first, data);
     // }
-    max_clique = findMaxKCore(data);
 
-    std::sort(max_clique.begin(), max_clique.end());
-    std::cout << max_clique.size() << std::endl;
+    // Much faster max clique alg
+    // Only because the each node only has 13 edges or so
+    std::set<std::string> maxClique{};
+    for (auto pair : data) {
+        std::set<std::string> set{};
+        set.insert(pair.first);
+
+        for (std::string node : pair.second) {
+            bool add_node{true};
+            for (std::string u : set) {
+                const auto it = std::find(data[u].begin(), data[u].end(), node);
+                if (it == data[u].end()) {
+                    add_node = false;
+                    break;
+                }
+            }
+            if (add_node) set.insert(node);
+        }
+        if (set.size() > maxClique.size()) maxClique = set;
+    }
+
+    std::vector<std::string> vec(maxClique.begin(), maxClique.end());
+    std::sort(vec.begin(), vec.end());
     std::cout << "Part 2: ";
-    for (std::string str : max_clique)
-        std::cout << str << ",";
+    for (std::string str : vec) std::cout << str << ",";
     std::cout << std::endl;
 }
 
