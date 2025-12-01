@@ -30,10 +30,8 @@ def part2(file):
     for line in data:
         dir = line[0]
         clicks = int(line[1:])
-        increase = math.floor(clicks/100)
-        # print(clicks, increase)
-        # num_zeros += math.floor(clicks / 100)
-        # clicks %= 100
+        num_zeros += math.floor(clicks / 100)
+        clicks %= 100
         if dir == 'R':
             for i in range(clicks):
                 x = (x + 1) % 100
