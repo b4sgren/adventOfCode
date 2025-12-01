@@ -27,42 +27,26 @@ def part2(file):
     
     x = 50
     num_zeros = 0
+    num_zeros2 = 0
     for line in data:
         dir = line[0]
         clicks = int(line[1:])
         num_zeros += math.floor(clicks / 100)
+        num_zeros2 += math.floor(clicks / 100)
         clicks %= 100
         if dir == 'R':
-            for i in range(clicks):
-                x = (x + 1) % 100
-                if x == 0:
-                    num_zeros += 1
-            # xp = (x + clicks) % 100
-            # if xp < x:
-            #     num_zeros += 1
-            # if xp == 0:
-            #     num_zeros -= 1
-            # x = xp
+            xp = (x + clicks) % 100
+            if xp < x:
+                num_zeros += 1
+            x = xp
         if dir == 'L':
-            for i in range(clicks):
-                x = x - 1
-                if x < 0:
-                    x = 100 + x
+            x0 = x
+            xp = (x - clicks) % 100
+            if (xp > x and x0 != 0) or xp == 0:
+                num_zeros += 1
+            x = xp
 
-                if x == 0:
-                    num_zeros += 1
-
-            # xp = (x - clicks) % 100
-            # if xp > x:
-            #     num_zeros += 1
-            # if xp == 0:
-            #     num_zeros -= 1
-            # x = xp
-    
-    # Count the times it passes zero but does not equal zero
-    # Add result from the prior function
     print(num_zeros)
-    # print(num_zeros + 1182)
 
 
 
