@@ -29,35 +29,48 @@ def part2(file):
     num_zeros = 0
     for line in data:
         dir = line[0]
-        clicks = float(line[1:])
+        clicks = int(line[1:])
         increase = math.floor(clicks/100)
         # print(clicks, increase)
-        num_zeros += math.floor(clicks / 100)
-        clicks %= 100
+        # num_zeros += math.floor(clicks / 100)
+        # clicks %= 100
         if dir == 'R':
-            xp = (x + clicks) % 100
-            if xp < x:
-                num_zeros += 1
-            if xp == 0:
-                num_zeros -= 1
-            x = xp
+            for i in range(clicks):
+                x = (x + 1) % 100
+                if x == 0:
+                    num_zeros += 1
+            # xp = (x + clicks) % 100
+            # if xp < x:
+            #     num_zeros += 1
+            # if xp == 0:
+            #     num_zeros -= 1
+            # x = xp
         if dir == 'L':
-            xp = (x - clicks) % 100
-            if xp > x:
-                num_zeros += 1
-            if xp == 0:
-                num_zeros -= 1
-            x = xp
+            for i in range(clicks):
+                x = x - 1
+                if x < 0:
+                    x = 100 + x
+
+                if x == 0:
+                    num_zeros += 1
+
+            # xp = (x - clicks) % 100
+            # if xp > x:
+            #     num_zeros += 1
+            # if xp == 0:
+            #     num_zeros -= 1
+            # x = xp
     
     # Count the times it passes zero but does not equal zero
     # Add result from the prior function
-    print(num_zeros + 1182)
+    print(num_zeros)
+    # print(num_zeros + 1182)
 
 
 
 if __name__=="__main__":
     # file = "test_input.txt"
-    file = "input.txt" # 6913 is to high and 5723 is to low... 
+    file = "input.txt"
 
-    part1(file)
-    part2(file)
+    part1(file)  # 1182
+    part2(file)  # 6907
