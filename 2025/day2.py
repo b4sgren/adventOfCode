@@ -46,8 +46,6 @@ def invalidPartsInRange2(id1, id2):
     max_num = int(id2)
 
     max_base_number_length = math.ceil(num_digits2/2)
-    # What to do if they are different
-
 
     # Multiplier has to be bigger than 1
     invalid_ids = []
@@ -80,8 +78,6 @@ def part2(file):
     for z, id_range in enumerate(id_ranges):
         ids = id_range.split('-')
         temp_ids = invalidPartsInRange2(ids[0], ids[1])
-        # print(ids, temp_ids)
-        debug = 1
         for id in temp_ids:
             total += id
 
