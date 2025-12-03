@@ -80,7 +80,7 @@ def part2(file):
     for z, id_range in enumerate(id_ranges):
         ids = id_range.split('-')
         temp_ids = invalidPartsInRange2(ids[0], ids[1])
-        print(ids, temp_ids)
+        # print(ids, temp_ids)
         debug = 1
         for id in temp_ids:
             total += id
@@ -89,8 +89,8 @@ def part2(file):
 
 
 if __name__=="__main__":
-    file = "test_input.txt"
-    # file = "input.txt" 
+    # file = "test_input.txt"
+    file = "input.txt" 
 
     part1(file)
     part2(file)  
