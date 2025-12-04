@@ -1,10 +1,6 @@
 from copy import deepcopy
 
-def part1(file):
-    with open(file, 'r') as f:
-        data = f.readlines()
-    
-    # pad around to not worry about overflow/underflow
+def padData(data):
     for i in range(len(data)):
         # strip new line off
         data[i] = '.' + data[i][:-1] + '.'
@@ -12,7 +8,11 @@ def part1(file):
     num_cols = len(data[0])
     data.insert(0, '.'*(num_cols))
     data.append('.' * (num_cols))
-    data2 = deepcopy(data)
+
+    return data
+
+def countNumPapersToRemove(data):
+    num_cols = len(data[0])
     num_rows = len(data)
 
 
@@ -40,8 +40,15 @@ def part1(file):
             if num_surrounding_papers < 4:
                 num_papers_to_move += 1
     
-    for i in range(len(data2)):
-        print(data2[i])
+    return num_papers_to_move
+
+def part1(file):
+    with open(file, 'r') as f:
+        data = f.readlines()
+    
+    # pad around to not worry about overflow/underflow
+    data = padData(data)
+    num_papers_to_move = countNumPapersToRemove(data)
     print(num_papers_to_move)
 
 
