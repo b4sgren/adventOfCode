@@ -22,9 +22,7 @@ def part1(file):
 def getLargestVoltage2(line):
     idx = -1
     num = ''
-    # print("====================================")
     for i in range(12, 0, -1):
-        # print(line[idx+1:-i])
         if i > 1:
             digit = max(line[idx+1:-i])
         else:
@@ -42,7 +40,6 @@ def part2(file):
     totalVoltage = 0
     for line in data:
         largestVoltage = getLargestVoltage2(line)
-        print(largestVoltage)
         totalVoltage += largestVoltage
     
     print(totalVoltage)
@@ -53,4 +50,4 @@ if __name__=="__main__":
     file = "input.txt" 
 
     part1(file)
-    part2(file)  
+    part2(file)  # Input needs an empty line at the end
