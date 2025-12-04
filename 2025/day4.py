@@ -1,3 +1,4 @@
+from copy import deepcopy
 
 def part1(file):
     with open(file, 'r') as f:
@@ -8,15 +9,16 @@ def part1(file):
         # strip new line off
         data[i] = '.' + data[i][:-1] + '.'
 
-    num_rows = len(data)
     num_cols = len(data[0])
     data.insert(0, '.'*(num_cols))
     data.append('.' * (num_cols))
+    data2 = deepcopy(data)
+    num_rows = len(data)
 
 
     num_papers_to_move = 0
     for i in range(1, num_rows):
-        for j in range(1, num_cols-1):
+        for j in range(1, num_cols):
             if data[i][j] != '@':
                 continue
 
@@ -38,12 +40,14 @@ def part1(file):
             if num_surrounding_papers < 4:
                 num_papers_to_move += 1
     
+    for i in range(len(data2)):
+        print(data2[i])
     print(num_papers_to_move)
 
 
 if __name__=="__main__":
-    file = "test_input.txt"
-    # file = "input.txt" 
+    # file = "test_input.txt"
+    file = "input.txt" 
 
     part1(file)
     # part2(file)
