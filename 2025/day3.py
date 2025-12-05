@@ -18,7 +18,6 @@ def part1(file):
     
     print(totalVoltage)
 
-# Requires Dynamic programming
 def getLargestVoltage2(line):
     idx = -1
     num = ''
