@@ -39,10 +39,52 @@ def part1(file):
     
     print(num_splits)
 
+num_solutions = {}
+
+def solveSubProblem(data, index):
+    global num_solutions
+    if index in num_solutions.keys():
+        return num_solutions[index]
+    if index[0] == len(data)-1:
+        num_solutions[index] = 1
+        return num_solutions[index]
+    
+    row, column = index
+    if data[row+1][column] == '^':
+        data[row+1][column-1] = '|'
+        num_solutions[index] = solveSubProblem(data, (row+1, column-1))
+        data[row+1][column-1] = '.'
+        data[row+1][column+1] = '|'
+        num_solutions[index] += solveSubProblem(data, (row+1, column+1))
+        debug = 1
+    else:
+        data[row+1][column] = '|'
+        num_solutions[index] = solveSubProblem(data, (row+1, column))
+
+
+    return num_solutions[index]
+
+
+# Requires dynamic programming
+def part2(file):
+    with open(file, 'r') as f:
+        data = f.readlines()
+    
+    data = padData(data)
+
+    id = data[1].index('S')
+    data[1][id] = '|'
+
+    index = (1, id)
+    solveSubProblem(data, index)
+
+    print(num_solutions[index])
+
+
 
 if __name__=="__main__":
     # file = "test_input.txt"
     file = "input.txt"  
 
     part1(file)
-    # part2(file)
+    part2(file)
