@@ -125,8 +125,8 @@ def part2(file, num_connections):
     print(total)
 
 if __name__=="__main__":
-    file, num_connections = "test_input.txt", 10
-    # file, num_connections = "input.txt", 1000
+    # file, num_connections = "test_input.txt", 10
+    file, num_connections = "input.txt", 1000
 
     part1(file, num_connections)
     part2(file, num_connections)
