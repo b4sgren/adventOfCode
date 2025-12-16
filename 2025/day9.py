@@ -36,7 +36,7 @@ def part1(file):
 
 if __name__=="__main__":
     # file = "test_input.txt"
-    file = "input.txt" # 2147466380 is to low
+    file = "input.txt" 
 
     part1(file)
     # part2(file)
